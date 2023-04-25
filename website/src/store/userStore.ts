@@ -54,12 +54,10 @@ export const useUserStore = create<UserState & UserActions>((set, get) => ({
             set({ user: null, isLoggedIn: false, status: message });
             navigate("/");
         }).catch(err => {
-            const { message } = err.reponse.data;
-            set({ user: null, isLoggedIn: false, status: message });
-            navigate("/");
+            set({ user: null, isLoggedIn: false, status: err.response.data.message });
         })
     },
-    checkSession: () => {
+    checkSession: async () => {
         axios.get(`${import.meta.env.VITE_API_URL}/auth/session`, { withCredentials: true }).then(res => {
             const { user, message } = res.data;
             set({ user, isLoggedIn: true, status: message });
