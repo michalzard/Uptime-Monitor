@@ -35,17 +35,16 @@ server.listen(process.env.PORT, () => { console.log(`Web ${process.env.NODE_ENV 
 
 // Database
 import pg from "pg";
+import { createTables } from "./sql/tables";
 const { Pool } = pg;
 export const db = new Pool({
     host: process.env.DB_HOST,
-    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME || "postgres",
     port: +process.env.DB_PORT! || 5432,//5432 is default postgres
-    user: process.env.DB_USER,
-    database: process.env.DB_NAME,
+    user: process.env.DB_USER || "postgres",
+    password: process.env.DB_PASSWORD || "",
 
 })
-import { createTables } from "./sql/tables";
-
 
 db.connect().then(async () => {
     console.log("Database connected");
