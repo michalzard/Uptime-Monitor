@@ -50,14 +50,13 @@ export async function userLogin(req: Request, res: Response) {
                 const { pk, password, ...user } = foundUser; //loaded from db
                 const generatedId = createId();
                 await db.query(saveToSession, [generatedId, pk]);
-
                 setHTTPOnlyCookie(res, "sessionID", generatedId);
                 res.status(200).send({ message: "User logged in", user });
             } else {
-                res.status(401).send({ message: "Unauthorized" });
+                res.status(404).send({ message: "Username or password is incorrect" });
             }
         } else {
-            res.status(401).send({ message: "Unauthorized" });
+            res.status(404).send({ message: "Unauthorized" });
         }
     } catch (err) {
         // handle error
@@ -68,10 +67,8 @@ export async function userLogin(req: Request, res: Response) {
 
 export async function userSession(req: Request, res: Response) {
     const cookies = readCookiesFromHeaders(req);
-
     try {
-        // TODO:load sessionID from cookies
-        if (!cookies?.sessionID) return res.status(401).send({ message: "Unauthorized" });
+        if (!cookies?.sessionID) { return res.status(401).send({ message: "Unauthorized" }); }
         const session = await db.query(findSessionByToken, [cookies?.sessionID]);
         if (session.rowCount > 0) {
             const userPK = session.rows[0].user_pk;
@@ -81,7 +78,7 @@ export async function userSession(req: Request, res: Response) {
             res.status(200).send({ message: "Authorized", user });
         } else {
             res.clearCookie("sessionID");
-            res.status(401).send({ message: "Unauthorized" });
+            res.status(304).send({ message: "Unauthorized" });
         }
     } catch (err) {
         // handle error
@@ -95,7 +92,6 @@ export async function userLogout(req: Request, res: Response) {
 
     try {
         if (!cookies?.sessionID) return res.status(401).send({ message: "Unauthorized" });
-        // TODO:load sessionID from cookies
         db.query(deleteSessionByToken, [cookies?.sessionID]).then(dbres => {
             res.clearCookie("sessionID");
             res.status(200).send({ message: "Logged out" });
