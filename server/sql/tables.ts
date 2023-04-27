@@ -1,17 +1,17 @@
 export const createUserTable: string = `
 CREATE TABLE IF NOT EXISTS "user"(
-    pk SERIAL PRIMARY KEY, 
+    pk BIGSERIAL PRIMARY KEY NOT NULL, 
     username VARCHAR(100) NOT NULL UNIQUE,
-    email VARCHAR(255) NOT NULL UNIQUE,
-    password TEXT NOT NULL,
-	id CHAR(24) NOT NULL UNIQUE
+    email VARCHAR(255) NULL UNIQUE,
+    password TEXT NULL,
+    avatar_url TEXT NULL
 );
-
 `;
 export const createSessionTable: string = `
 CREATE TABLE IF NOT EXISTS "session"(
-    token CHAR(24) NOT NULL,
-    user_pk INT REFERENCES "user"(pk)
+    user_pk INT REFERENCES "user"(pk),
+    token VARCHAR(24) NOT NULL,
+    service VARCHAR(100)
 );
 `;
 
