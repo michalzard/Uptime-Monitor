@@ -3,3 +3,4 @@ export default function Community() {
         <div>Community</div>
     )
 }
+

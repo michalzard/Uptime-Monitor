@@ -1,12 +1,12 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { useNavigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useUserStore } from '../../store/userStore';
 import { GithubIcon, GoogleIcon, LoadingSpinner } from "../../Icons";
 
 function SignUp() {
     const navigate = useNavigate();
-    const user = useUserStore();
+    const userState = useUserStore();
 
     const signupValidation = yup.object({
         username: yup.string().required().min(5).max(30).trim(),
@@ -22,10 +22,11 @@ function SignUp() {
         },
         validationSchema: signupValidation,
         onSubmit: (values, form) => {
-            user.register(values, navigate);
+            userState.register(values, navigate);
             form.resetForm();
         }
-    })
+    });
+    if (!userState.isLoading && userState.isLoggedIn) return <Navigate to="/" />
     return (
         <div className="w-screen h-screen flex flex-col justify-center items-center px-4 bg-slate-50">
             <form onSubmit={handleSubmit} className="rounded-md flex flex-col items-center w-96 py-10 pt-6 shadow-xl bg-white border">
@@ -59,11 +60,12 @@ function SignUp() {
                     <input id="password" type="password" placeholder="Password" required value={values.password} onChange={handleChange} onBlur={handleBlur}
                         className={`${errors.password && touched.password ? " border-red-500" : ""} border-b focus:outline-blue-500 border-gray-300 mb-2 bg-gray-50 placeholder:text-gray-700 px-3 py-1.5 rounded-sm`} />
                     <span className="text-sm text-red-500">{errors.password && touched.password ? errors.password : ""}</span>
-                    <span className="text-sm text-red-500">{user.status.includes("user") ? user.status : ""}</span>
+                    <span className="text-sm text-red-500">{userState.status?.toLowerCase().includes("user") ? userState.status : ""}</span>
 
                     {/* sign in */}
-                    <button type="submit" className="bg-blue-700 text-white rounded-md py-2 font-semibold tracking-wide flex items-center justify-center" disabled={isSubmitting}>
-                        Sign in {isSubmitting ? <LoadingSpinner className="ml-2 h-1.5 overflow-visible text-blue-400 -translate-y-2.5 " /> : null}
+                    <button type="submit" className={`bg-blue-700 text-white rounded-md py-2 font-semibold tracking-wide 
+                    flex items-center justify-center`} disabled={isSubmitting}>
+                        Sign up {isSubmitting ? <LoadingSpinner className="ml-2 h-1.5 overflow-visible text-blue-400 -translate-y-2.5" /> : null}
                     </button>
                     <p onClick={() => navigate("/signin")} className="text-blue-600 mt-2 cursor-pointer">Already have an account? Sign in</p>
                     <p onClick={() => navigate("/forgot-password")} className="text-blue-600 cursor-pointer">Forgot your password?</p>

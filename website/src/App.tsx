@@ -14,6 +14,7 @@ import Docs from "./components/docs/Docs";
 
 function App() {
   const user = useUserStore();
+
   useEffect(() => {
     user.checkSession();
   }, []);
