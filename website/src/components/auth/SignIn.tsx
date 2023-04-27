@@ -1,12 +1,13 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { useUserStore } from '../../store/userStore';
-import { GithubIcon, GoogleIcon } from '../../Icons';
+import { GithubIcon, GoogleIcon, LoadingSpinner } from '../../Icons';
+import { useEffect } from "react";
 
 function SignIn() {
     const navigate = useNavigate();
-    const user = useUserStore();
+    const userState = useUserStore();
     const loginValidation = yup.object({
         username: yup.string().required().min(5).max(30).trim(),
         password: yup.string().required().min(5).trim(),
@@ -17,11 +18,23 @@ function SignIn() {
             username: "",
             password: "",
         },
+        validationSchema: loginValidation,
         onSubmit: (values, form) => {
-            user.login(values, navigate);
+            userState.login(values, navigate);
             form.resetForm();
         }
     });
+
+    const searchQuery = new URLSearchParams(useLocation().search);
+    useEffect(() => {
+        // check session if loading
+        const githubCode = searchQuery.get("code");
+        if (!userState.isLoading && !userState.isLoggedIn && githubCode) {
+            userState.githubAuth(githubCode!, navigate);
+        }
+    }, [location]);
+
+    if (!userState.isLoading && userState.isLoggedIn) return <Navigate to="/" />
     return (
         <div className="w-screen h-screen flex flex-col justify-center items-center px-2 bg-slate-50">
             <form onSubmit={handleSubmit} className="rounded-md flex flex-col items-center max-[639px]:w-full sm:w-96  py-10 pt-6 shadow-xl bg-white border ">
@@ -30,7 +43,7 @@ function SignIn() {
                 </p>
                 {/* 3rd party logons */}
                 <section className="flex items-center justify-center">
-                    <button className="mr-1 flex border border-black rounded-xl px-3 py-1.5">
+                    <button onClick={userState.githubRedirect} className="mr-1 flex border border-black rounded-xl px-3 py-1.5">
                         <GithubIcon className="mr-2 w-6 h-6 overflow-visible" />
                         <span className="text-black tracking-wide font-semibold">Github</span>
                     </button>
@@ -54,9 +67,12 @@ function SignIn() {
                         className={`${errors.password && touched.password ? " border-red-500" : ""} border-b
                         focus:outline-blue-500 border-gray-300 mb-2 bg-gray-50 placeholder:text-gray-700 px-3 py-1.5 rounded-sm`} />
                     <span className="text-sm text-red-500">{errors.password && touched.password ? errors.password : ""}</span>
-                    <span className="text-sm text-red-500">{user.status.includes("user") ? user.status : ""}</span>
+                    <span className="text-sm text-red-500">{userState.status?.toLowerCase().includes("user") ? userState.status : ""}</span>
 
-                    <button type="submit" className="bg-blue-700 text-white rounded-md py-2 font-semibold tracking-wide">Sign in</button>
+                    <button type="submit" className={`bg-blue-700 text-white rounded-md py-2 font-semibold tracking-wide 
+                    flex items-center justify-center`} disabled={isSubmitting}>
+                        Sign in {isSubmitting ? <LoadingSpinner className="ml-2 h-1.5 overflow-visible text-blue-400 -translate-y-2.5" /> : null}
+                    </button>
                     {/* forgot pw */}
                     <p onClick={() => navigate("/signup")} className="text-blue-600 mt-2 cursor-pointer">Need an account? Sign up</p>
                     <p onClick={() => navigate("/forgot-password")} className="text-blue-600 cursor-pointer">Forgot your password?</p>

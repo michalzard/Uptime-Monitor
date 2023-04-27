@@ -1,8 +1,9 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useUserStore } from '../../store/userStore';
 import { GithubIcon, GoogleIcon, LoadingSpinner } from "../../Icons";
+import { useEffect } from "react";
 
 function SignUp() {
     const navigate = useNavigate();
@@ -26,6 +27,15 @@ function SignUp() {
             form.resetForm();
         }
     });
+    const searchQuery = new URLSearchParams(useLocation().search);
+    useEffect(() => {
+        // check session if loading
+        const githubCode = searchQuery.get("code");
+        if (!userState.isLoading && !userState.isLoggedIn && githubCode) {
+            userState.githubAuth(githubCode!, navigate);
+        }
+    }, [location]);
+
     if (!userState.isLoading && userState.isLoggedIn) return <Navigate to="/" />
     return (
         <div className="w-screen h-screen flex flex-col justify-center items-center px-4 bg-slate-50">
@@ -34,7 +44,7 @@ function SignUp() {
                     Sign up for <span className="text-blue-700 text-3xl font-bold tracking-widest">SENTINEL</span>
                 </p>
                 <section className="flex items-center justify-center">
-                    <button className="mr-1 flex border border-black rounded-xl px-3 py-1.5">
+                    <button onClick={userState.githubRedirect} className="mr-1 flex border border-black rounded-xl px-3 py-1.5">
                         <GithubIcon className="mr-2 w-6 h-6 overflow-visible" />
                         <span className="text-black tracking-wide font-semibold">Github</span>
                     </button>
