@@ -27,6 +27,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "express": "^4.18.2",
+    "googleapis": "^118.0.0",
     "http2-express-bridge": "^1.0.7",
     "pg": "^8.10.0",
     "selfsigned": "^2.1.1",
