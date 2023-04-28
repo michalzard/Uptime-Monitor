@@ -5,6 +5,7 @@ import { useUserStore } from '../../store/userStore';
 import { GithubIcon, GoogleIcon, LoadingSpinner } from "../../Icons";
 import { useEffect } from "react";
 
+
 function SignUp() {
     const navigate = useNavigate();
     const userState = useUserStore();
@@ -27,14 +28,6 @@ function SignUp() {
             form.resetForm();
         }
     });
-    const searchQuery = new URLSearchParams(useLocation().search);
-    useEffect(() => {
-        // check session if loading
-        const githubCode = searchQuery.get("code");
-        if (!userState.isLoading && !userState.isLoggedIn && githubCode) {
-            userState.githubAuth(githubCode!, navigate);
-        }
-    }, [location]);
 
     if (!userState.isLoading && userState.isLoggedIn) return <Navigate to="/" />
     return (
@@ -44,11 +37,11 @@ function SignUp() {
                     Sign up for <span className="text-blue-700 text-3xl font-bold tracking-widest">SENTINEL</span>
                 </p>
                 <section className="flex items-center justify-center">
-                    <button onClick={userState.githubRedirect} className="mr-1 flex border border-black rounded-xl px-3 py-1.5">
+                    <button type="button" onClick={() => { console.log("signup github trigger"); userState.githubRedirect() }} tabIndex={-1} className="mr-1 flex border border-black rounded-xl px-3 py-1.5">
                         <GithubIcon className="mr-2 w-6 h-6 overflow-visible" />
                         <span className="text-black tracking-wide font-semibold">Github</span>
                     </button>
-                    <button className="ml-1 flex border border-orange-500 rounded-xl px-3 py-1.5">
+                    <button type="button" onClick={() => { console.log("signup google trigger"); userState.googleRedirect() }} tabIndex={-1} className="ml-1 flex border border-orange-500 rounded-xl px-3 py-1.5">
                         <GoogleIcon className="mr-5 w-3 h-3 overflow-visible" />
                         <span className="text-black tracking-wide font-semibold">Google</span>
                     </button>
@@ -70,7 +63,7 @@ function SignUp() {
                     <input id="password" type="password" placeholder="Password" required value={values.password} onChange={handleChange} onBlur={handleBlur}
                         className={`${errors.password && touched.password ? " border-red-500" : ""} border-b focus:outline-blue-500 border-gray-300 mb-2 bg-gray-50 placeholder:text-gray-700 px-3 py-1.5 rounded-sm`} />
                     <span className="text-sm text-red-500">{errors.password && touched.password ? errors.password : ""}</span>
-                    <span className="text-sm text-red-500">{userState.status?.toLowerCase().includes("user") ? userState.status : ""}</span>
+                    <span className="text-sm text-red-500">{!userState.status?.toLowerCase().includes("authorized") && userState.status ? userState.status : ""}</span>
 
                     {/* sign in */}
                     <button type="submit" className={`bg-blue-700 text-white rounded-md py-2 font-semibold tracking-wide 
