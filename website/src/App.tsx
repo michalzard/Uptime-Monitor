@@ -8,7 +8,7 @@ import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
 // lazy load this
 import Dashboard from "./components/dashboard/Dashboard";
-import Pricing from "./components/Pricing";
+import Pricing from "./components/PricingPage";
 import Community from "./components/community/Community";
 import Docs from "./components/docs/Docs";
 
@@ -19,15 +19,13 @@ function App() {
     const code = new URLSearchParams(location.search).get("code");
     const scope = new URLSearchParams(location.search).get("scope");
     if (!userState.isLoggedIn && code) {
-      if (scope) {console.log("google"); userState.googleAuth(code); }
-      else {console.log("github"); userState.githubAuth(code); }
+      if (scope) { userState.googleAuth(code); }
+      else { userState.githubAuth(code); }
     } else {
       userState.checkSession();
     }
-    console.log("useEffect");
   }, [location]);
 
-  console.log(userState);
   return (
     <Router>
       <Header />

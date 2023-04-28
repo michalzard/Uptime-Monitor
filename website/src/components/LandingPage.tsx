@@ -15,11 +15,11 @@ function LandingPage() {
   }, []);
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-slate-50 p-10">
+    <div className="w-full min-h-screen flex flex-col bg-slate-50 p-4 md:p-10">
 
-      <section className="flex flex-col items-center">
-        <span className="text-black text-3xl font-bold">Build trust with your customers</span>
-        <span className="text-gray-500 text-xl font-semibold">Easily communicate real-time status to your customers.</span>
+      <section className="flex flex-col items-center mb-4">
+        <span className="text-black text-xl sm:text-3xl font-bold">Build trust with your customers</span>
+        <span className="text-gray-500  text-center text-lg sm:text-xl font-semibold">Easily communicate real-time status to your customers.</span>
         <button className="bg-blue-700 text-white font-medium rounded-md py-2 px-4 mt-3" onClick={() => navigate("/signup")}>Try now for free</button>
       </section>
 
@@ -60,14 +60,14 @@ type LandingArcticleProps = {
 function FeatureArcticle({ header, title, description, imgSrc, orientation = "left" }: LandingArcticleProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
   return (
-    <article className={`w-full py-3 ${orientation === "left" ? "flex flex-row" : "flex flex-row-reverse"} justify-center items-center`}>
+    <article className={`w-full py-3 ${orientation === "left" ? "flex flex-row" : "flex flex-row-reverse"} justify-center items-center flex-wrap`}>
       <section className={`flex flex-1 max-w-lg flex-col ${orientation === "left" ? "text-right" : "text-left"}`}>
         <span className="text-gray-500 text-sm tracking-wide uppercase mb-2">{header}</span>
-        <span className="text-black font-bold text-3xl mb-4">{title}</span>
-        <span className="text-black text-md ">{description}</span>
+        <span className="text-black font-bold text-xl sm:text-3xl mb-4">{title}</span>
+        <span className="text-black text-base sm:text-md ">{description}</span>
       </section>
       <img className={`h-96 mix-blend-multiply transition-opacity ease-in duration-500  ${imgLoaded ? "opacity-100" : "opacity-0"}`}
-        onLoad={() => setImgLoaded(true)} width={500} src={imgSrc} alt={title} />
+        onLoad={() => setImgLoaded(true)} src={imgSrc} alt={title} />
     </article >
   )
 }

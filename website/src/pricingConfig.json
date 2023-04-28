@@ -1,0 +1,50 @@
+[
+  {
+    "title": "Free",
+    "price": 0,
+    "description": "Great plan for people that want to look around.",
+    "featureList": [
+      "1 Page",
+      "10 Components",
+      "25 Subscribers",
+      "Email notifications"
+    ]
+  },
+  {
+    "title": "Hobby",
+    "price": 20,
+    "description": "Basic communication for small projects and teams.",
+    "featureList": [
+      "3 Pages",
+      "25 Components",
+      "200 Subscribers",
+      "Email notifications",
+      "Customizable banner"
+    ]
+  },
+  {
+    "title": "Starter",
+    "price": 59,
+    "description": "Improved notifications for growing teams.",
+    "featureList": [
+      "5 Pages",
+      "75 Components",
+      "500 Subscribers",
+      "Email/SMS/Webhook notifications",
+      "Customizable banner"
+    ]
+  },
+  {
+    "title": "Pro",
+    "price": 99,
+    "description": "Scale to meet your business needs.",
+    "featureList": [
+      "10 Pages",
+      "120 Components",
+      "1000 Subscribers",
+      "Email/SMS/Webhook notifications",
+      "Slack notifications",
+      "Customizable banner"
+    ]
+  }
+]
