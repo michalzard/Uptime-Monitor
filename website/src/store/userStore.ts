@@ -15,7 +15,9 @@ type UserActions = {
     logout: (navigate: NavigateFunction) => void;
     checkSession: () => void;
     githubRedirect: () => void;
-    githubAuth: (code: string, navigate: NavigateFunction) => void;
+    githubAuth: (code: string) => void;
+    googleRedirect: () => void;
+    googleAuth: (code: string) => void;
 }
 
 export type RegisterValues = {
@@ -75,17 +77,43 @@ export const useUserStore = create<UserState & UserActions>((set, get) => ({
     },
     githubRedirect: () => {
         // redirects to github's oauths page
+        set({ isLoading: true });
         window.location.href = `https://github.com/login/oauth/authorize?client_id=${import.meta.env.VITE_GITHUB_CLIENT_ID}&scope=user`;
     },
-    githubAuth: async (code: string, navigate: NavigateFunction) => {
+    githubAuth: async (code: string) => {
         set({ isLoading: true });
         axios.post(`${import.meta.env.VITE_API_URL}/auth/github`, { code }, { withCredentials: true }).then(res => {
             const { message, user } = res.data;
             set({ user, isLoggedIn: true, isLoading: false, status: message });
-            navigate("/");
+            window.location.href = import.meta.env.VITE_CLIENT_URL;
+        }).catch(err => {
+            console.log(err.response.data.message);
+            set({ isLoading: false, isLoggedIn: false, status: err.response.data.message });
+        })
+    },
+    googleRedirect: async () => {
+        set({ isLoading: true });
+        axios.get(`${import.meta.env.VITE_API_URL}/auth/google/url`).then(res => {
+            const { location } = res.data;
+            if (location) {
+                set({ isLoading: false });
+                window.location.href = location;
+            }
+            console.log(window.location);
         }).catch(err => {
             set({ isLoading: false, status: err.response.data.message });
         })
     },
+    googleAuth: (code: string) => {
+        set({ isLoading: true });
+        axios.post(`${import.meta.env.VITE_API_URL}/auth/google/access`, { code }, { withCredentials: true }).then(res => {
+            const { message, user } = res.data;
+            set({ user, isLoggedIn: true, isLoading: false, status: message });
+        }).catch(err => {
+            window.location.href = import.meta.env.VITE_CLIENT_URL;
+            set({ isLoading: false, status: err.response.data.message });
+        })
+    },
+
 }));
 
