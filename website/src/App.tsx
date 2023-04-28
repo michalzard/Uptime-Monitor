@@ -1,5 +1,5 @@
 import Header from "./components/Header"
-import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet, useSearchParams, useParams, useNavigate } from "react-router-dom";
 import { useUserStore } from "./store/userStore";
 import { useEffect } from "react";
 
@@ -13,17 +13,27 @@ import Community from "./components/community/Community";
 import Docs from "./components/docs/Docs";
 
 function App() {
-  const user = useUserStore();
+  const userState = useUserStore();
 
   useEffect(() => {
-    user.checkSession();
-  }, []);
+    const code = new URLSearchParams(location.search).get("code");
+    const scope = new URLSearchParams(location.search).get("scope");
+    if (!userState.isLoggedIn && code) {
+      if (scope) {console.log("google"); userState.googleAuth(code); }
+      else {console.log("github"); userState.githubAuth(code); }
+    } else {
+      userState.checkSession();
+    }
+    console.log("useEffect");
+  }, [location]);
+
+  console.log(userState);
   return (
     <Router>
       <Header />
       <Routes>
         {/* Landing Page */}
-        <Route path="/" element={<Outlet />}>
+        <Route path="" element={<Outlet />}>
           <Route path="" element={<LandingPage />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="signin" element={<SignIn />} />
