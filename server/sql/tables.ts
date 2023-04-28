@@ -4,7 +4,8 @@ CREATE TABLE IF NOT EXISTS "user"(
     username VARCHAR(100) NOT NULL UNIQUE,
     email VARCHAR(255) NULL UNIQUE,
     password TEXT NULL,
-    avatar_url TEXT NULL
+    avatar_url TEXT NULL,
+    id VARCHAR(100) 
 );
 `;
 export const createSessionTable: string = `
