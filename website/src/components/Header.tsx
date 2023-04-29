@@ -47,7 +47,7 @@ function Header() {
                         :
                         <>
                             <button onClick={() => { appState.selectHeaderIndex(10); navigate("/signup") }} className="mr-2 rounded-2xl bg-blue-700 text-white font-semibold px-4 py-1">Start for free</button>
-                            <button onClick={() => { appState.selectHeaderIndex(10); navigate("/signin") }} className="rounded-2xl border border-blue-700 text-white font-semibold px-4 py-1">Sign in</button>
+                            <button onClick={() => { appState.selectHeaderIndex(10); navigate("/signin") }} className="rounded-2xl border border-blue-700 text-blue-700 font-semibold px-4 py-1">Sign in</button>
                         </>
                 }
             </nav >
