@@ -105,7 +105,7 @@ export async function userGoogleRequestLink(req: Request, res: Response) {
             response_type: "code",
         });
         if (authorizationURL) {
-            res.status(200).send({ location: authorizationURL });
+            res.status(200).send({ message: "Google authorization url", location: authorizationURL });
         } else {
             res.status(404).send({ message: "There was some issue generating authorizationURL", location: null });
         }
@@ -129,26 +129,48 @@ export async function userGoogleAccess(req: Request, res: Response) {
         const { data } = userInfoAPI;
         const { id, email, name, picture } = data;
         if (data) {
-            const registered = await db.query(registerUser, [name, email, null, picture, id]);
-            const user = registered.rows[0];
-            if (user) {
-                const { pk, username, email, avatar_url } = user;
-                const savingSession = await db.query(saveToSession, [id, pk, "google"]);
-                const session = savingSession.rows[0];
-                if (session) {
-                    const { token, service } = session;
-                    setHTTPOnlyCookie(res, "sessionID", token);
 
-                    res.status(200).send({
-                        message: "Google authorized", user: {
-                            username, email, avatar_url, service
-                        }
-                    });
+            if (id) {
+                const isAlreayRegged = await db.query(findUserByID, [id]);
+                const user = isAlreayRegged.rows[0];
+                if (user) {
+                    // create session and login
+
+                    const saving = await db.query(saveToSession, [id, user.pk, "google"]);
+                    const session = saving.rows[0];
+                    const { token, service } = session;
+                    if (session) {
+                        const { pk, password, ...rest } = user;
+                        setHTTPOnlyCookie(res, "sessionID", token);
+                        res.status(200).send({ message: "Google user authorized", user: { ...rest, service } })
+                    } else {
+                        res.status(404).send({ message: "Bad Request" });
+                    }
                 } else {
-                    res.status(404).send({ message: "Issue with saving user" });
+                    // register
+                    const registered = await db.query(registerUser, [name, email, null, picture, id]);
+                    const user = registered.rows[0];
+                    if (user) {
+                        const { pk, username, email, avatar_url } = user;
+                        const savingSession = await db.query(saveToSession, [id, pk, "google"]);
+                        const session = savingSession.rows[0];
+                        if (session) {
+                            const { token, service } = session;
+                            setHTTPOnlyCookie(res, "sessionID", token);
+
+                            res.status(200).send({
+                                message: "Google authorized", user: {
+                                    username, email, avatar_url, service
+                                }
+                            });
+                        } else {
+                            res.status(404).send({ message: "Issue with saving user" });
+                        }
+                    }
                 }
+
             } else {
-                res.status(404).send({ message: "Issue with saving user" });
+                res.status(404).send({ message: "Issue with user authorization" });
             }
         } else {
             res.status(404).send({ message: "Bad Ruquest" });
