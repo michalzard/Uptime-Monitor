@@ -1,9 +1,8 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
-import { Navigate, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../store/userStore';
 import { GithubIcon, GoogleIcon, LoadingSpinner } from '../../Icons';
-import { useEffect } from "react";
 
 function SignIn() {
     const navigate = useNavigate();
@@ -26,7 +25,7 @@ function SignIn() {
     });
     if (!userState.isLoading && userState.isLoggedIn) return <Navigate to="/" />
     return (
-        <div className="w-screen h-screen flex flex-col justify-center items-center px-2 bg-slate-50">
+        <main className="w-screen h-screen flex flex-col justify-center items-center px-2 bg-slate-50">
             <form onSubmit={handleSubmit} className="rounded-md flex flex-col items-center max-[639px]:w-full sm:w-96  py-10 pt-6 shadow-xl bg-white border ">
                 <p className="font-semibold text-3xl mb-3">
                     Sign into <span className="text-blue-700 text-3xl font-bold tracking-widest">SENTINEL</span>
@@ -68,7 +67,7 @@ function SignIn() {
                     <p onClick={() => navigate("/forgot-password")} className="text-blue-600 cursor-pointer">Forgot your password?</p>
                 </section>
             </form>
-        </div >
+        </main >
     )
 }
 

@@ -1,19 +1,21 @@
 import Header from "./components/Header"
-import { BrowserRouter as Router, Routes, Route, Outlet, useSearchParams, useParams, useNavigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet, useSearchParams, useParams, useNavigate, Navigate } from "react-router-dom";
 import { useUserStore } from "./store/userStore";
 import { useEffect } from "react";
-
+// TODO:lazy load this
 import LandingPage from "./components/LandingPage";
 import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
-// lazy load this
-import Dashboard from "./components/dashboard/Dashboard";
+import DashboardLayout from "./layouts/DashboardLayout";
 import Pricing from "./components/PricingPage";
 import Community from "./components/community/Community";
 import Docs from "./components/docs/Docs";
+import { useAppStore } from "./store/appStore";
+import HeaderLayout from "./layouts/HeaderLayout";
 
 function App() {
   const userState = useUserStore();
+  const appStore = useAppStore();
 
   useEffect(() => {
     const code = new URLSearchParams(location.search).get("code");
@@ -28,30 +30,46 @@ function App() {
 
   return (
     <Router>
-      <Header />
       <Routes>
         {/* Landing Page */}
-        <Route path="" element={<Outlet />}>
+        <Route element={<HeaderLayout />}>
           <Route path="" element={<LandingPage />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="signin" element={<SignIn />} />
         </Route>
-        {/* Dashboard */}
-        <Route path="/dashboard" element={<Outlet />}>
-          <Route path="" element={<Dashboard />} />
-        </Route>
+
         {/* Pricing */}
-        <Route path="/pricing" element={<Outlet />}>
+        <Route path="/pricing" element={<HeaderLayout />}>
           <Route path="" element={<Pricing />} />
         </Route>
         {/* Community */}
-        <Route path="/community" element={<Outlet />}>
+        <Route path="/community" element={<HeaderLayout />}>
           <Route path="" element={<Community />} />
         </Route>
         {/* Documentation */}
-        <Route path="/docs" element={<Outlet />}>
+        <Route path="/docs" element={<HeaderLayout />}>
           <Route path="" element={<Docs />} />
         </Route>
+
+        {/* Dashboard(Protected) */}
+
+        <Route path="/dashboard" element={<HeaderLayout />}>
+          <Route path="" element={<DashboardLayout />}>
+            {/* user */}
+            <Route path="profile" element={<section>Profile Section</section>} />
+            <Route path="billing" element={<section>Billing Section</section>} />
+            {/* customization buttons */}
+            <Route path="incidents" element={<section>Incidents Section</section>} />
+            <Route path="components" element={<section>Component Section</section>} />
+            <Route path="subscribers" element={<section>Subscribers email list Section</section>} />
+            {/* page related */}
+            <Route path="pages">
+              <Route path="create" element={<section>Pages create section</section>} />
+            </Route>
+          </Route>
+        </Route>
+
+
         {/* TODO: setup 404 route */}
       </Routes>
     </Router >

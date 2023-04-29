@@ -2,8 +2,14 @@ import axios from "axios";
 import { create } from "zustand";
 import { NavigateFunction } from "react-router-dom";
 
+type User = {
+    username: string;
+    email: string;
+    avatar_url: string;
+    service: string;
+}
 type UserState = {
-    user: object | null;
+    user: User | null;
     status: string;
     isLoggedIn: boolean;
     isLoading: boolean;

@@ -13,7 +13,8 @@ type PricingOptions = {
 
 const Pricing = () => {
     return (
-        <div className="bg-slate-50 w-full h-full flex justify-center items-center p-4 pb-52 flex-wrap">
+        <div className="bg-slate-50 w-full h-full flex justify-center items-center p-4 pb-10 flex-wrap 
+        [&>:nth-child(3)]:h-auto [&>:nth-child(4)]:h-auto">
             {
                 PricingConfig.map((config, i) => (
                     <PricingPanel key={i} price={config.price} title={config.title} description={config.description} features={config.featureList} />
@@ -29,7 +30,7 @@ const PricingPanel = (props: PricingOptions) => {
     const navigate = useNavigate();
     const appState = useAppStore();
     return (
-        <section className="w-72 flex flex-col items-center border m-2 py-2 px-4 border-slate-300">
+        <section className="w-72 h-96 flex flex-col items-center border m-2 py-2 px-4 border-slate-300 ">
             <p className="text-2xl mb-2 font-semibold tracking-wide">{props.title}</p>
             <p className="flex justify-center">
                 <span className="text-md font-semibold self-start my-1 mr-1 text-gray-600">€</span>

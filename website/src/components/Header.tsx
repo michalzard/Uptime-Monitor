@@ -19,10 +19,11 @@ function Header() {
         if (index !== -1) appState.selectHeaderIndex(index);
     }, []);
     return (
-        <header className="border-b-2 h-16 p-5 px-10 flex items-center justify-between z-50 sticky top-0 ">
-            <nav onClick={() => appState.selectHeaderIndex(-1)}>
+        <header className="border-b-2 h-16 p-5 px-10 flex items-center justify-between z-50 bg-slate-50 sticky top-0">
+            < nav onClick={() => appState.selectHeaderIndex(-1)
+            }>
                 <CompanyLogo />
-            </nav>
+            </nav >
             <MenuIcon className="w-6 h-6 lg:hidden" />
 
             <nav className="hidden lg:flex justify-center items-center">
@@ -50,7 +51,7 @@ function Header() {
                             <button onClick={() => { appState.selectHeaderIndex(10); navigate("/signin") }} className="rounded-2xl border border-blue-700 text-blue-700 font-semibold px-4 py-1">Sign in</button>
                         </>
                 }
-            </nav >
+            </nav>
         </header >
     )
 }
