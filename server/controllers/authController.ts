@@ -122,7 +122,7 @@ export async function userSession(req: Request, res: Response) {
  * @param value cookie value
  */
 export function setHTTPOnlyCookie(res: Response, name: string, value: string) {
-    res.cookie(name, value, { httpOnly: true, secure: process.env.NODE_ENV === "production" ? true : false });
+    res.cookie(name, value, { httpOnly: true, secure: true });
 }
 /**
  * Reads cookies from request headers in order to parsed them into k,v pairs
