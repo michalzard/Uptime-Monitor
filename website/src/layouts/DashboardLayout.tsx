@@ -1,7 +1,12 @@
+import { useEffect } from "react";
 import Sidebar from "../components/dashboard/Sidebar";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 function Dashboard() {
-
+  const navigate = useNavigate();
+  const location = useLocation();
+  useEffect(() => {
+    if (location.pathname === "/dashboard") navigate("/dashboard/incidents");
+  }, []);
   return (
     <main className="flex w-full h-full">
       <Sidebar />
@@ -9,8 +14,4 @@ function Dashboard() {
     </main>
   )
 }
-
 export default Dashboard;
-
-// either replace dashboard button with user account button or have it shown somewhere close
-// will serve for everything status related

@@ -61,7 +61,7 @@ function App() {
             {/* customization buttons */}
             <Route path="incidents" element={<section>Incidents Section</section>} />
             <Route path="components" element={<section>Component Section</section>} />
-            <Route path="subscribers" element={<section>Subscribers email list Section</section>} />
+            <Route path="listeners" element={<section>Listener email list Section</section>} />
             {/* page related */}
             <Route path="pages">
               <Route path="create" element={<section>Pages create section</section>} />

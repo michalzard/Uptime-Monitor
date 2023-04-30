@@ -2,24 +2,31 @@ import { create } from "zustand";
 
 type AppState = {
     headerIndex: number;
-    dashboardButtonIndex: number;
+    customizationIndex: number;
+    customizationButtons: { text: string; desiredIndex: number }[]
 }
 type AppActions = {
     selectHeaderIndex: (index: number) => void;
-    selectDashboardButton: (index: number) => void;
-    isDashboardButtonSelected: (buttonIndex: number) => boolean;
+    selectCustomizationButton: (index: number) => void;
+    selectCustomizationButtonByPath: (path: string) => void;
+    isCustomizationButtonActive: (currentIndex: number) => boolean;
 }
 
 export const useAppStore = create<AppState & AppActions>((set, get) => ({
     headerIndex: -1,
-    dashboardButtonIndex: 1,
+    customizationIndex: 0,
+    customizationButtons: [{ text: "Incidents", desiredIndex: 0 }, { text: "Components", desiredIndex: 1 }, { text: "Listeners", desiredIndex: 2 }],
     selectHeaderIndex(index: number) {
         set({ headerIndex: index });
     },
-    selectDashboardButton(index: number) {
-        set({ dashboardButtonIndex: index });
+    selectCustomizationButton(index: number) {
+        set({ customizationIndex: index });
     },
-    isDashboardButtonSelected(buttonIndex: number) {
-        return this.dashboardButtonIndex === buttonIndex;
+    selectCustomizationButtonByPath(path: string) {
+        const index = this.customizationButtons.findIndex((value) => value.text.toLowerCase() === path.toLowerCase());
+        this.selectCustomizationButton(index);
     },
+    isCustomizationButtonActive(currentIndex: number) {
+        return this.customizationIndex === currentIndex;
+    }
 }))
