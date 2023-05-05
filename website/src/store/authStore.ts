@@ -37,7 +37,7 @@ export type LoginValues = {
     password: string;
 }
 
-export const useUserStore = create<UserState & UserActions>((set, get) => ({
+export const authStore = create<UserState & UserActions>((set, get) => ({
     user: null,
     isLoggedIn: false,
     status: "",

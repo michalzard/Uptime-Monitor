@@ -1,13 +1,13 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { Navigate, useNavigate } from "react-router-dom";
-import { useUserStore } from '../../store/userStore';
+import { authStore } from '../../store/authStore';
 import { GithubIcon, GoogleIcon, LoadingSpinner } from "../../Icons";
 
 
 function SignUp() {
     const navigate = useNavigate();
-    const userState = useUserStore();
+    const auth = authStore();
 
     const signupValidation = yup.object({
         username: yup.string().required().min(5).max(30).trim(),
@@ -23,12 +23,12 @@ function SignUp() {
         },
         validationSchema: signupValidation,
         onSubmit: (values, form) => {
-            userState.register(values, navigate);
+            auth.register(values, navigate);
             form.resetForm();
         }
     });
 
-    if (!userState.isLoading && userState.isLoggedIn) return <Navigate to="/" />
+    if (!auth.isLoading && auth.isLoggedIn) return <Navigate to="/" />
     return (
         <main className="w-screen h-screen flex flex-col justify-center items-center px-4 bg-slate-50">
             <form onSubmit={handleSubmit} className="rounded-md flex flex-col items-center w-96 py-10 pt-6 shadow-xl bg-white border">
@@ -36,11 +36,11 @@ function SignUp() {
                     Sign up for <span className="text-blue-700 text-3xl font-bold tracking-widest">SENTINEL</span>
                 </p>
                 <section className="flex items-center justify-center">
-                    <button type="button" onClick={() => { console.log("signup github trigger"); userState.githubRedirect() }} tabIndex={-1} className="mr-1 flex border border-black rounded-xl px-3 py-1.5">
+                    <button type="button" onClick={() => { console.log("signup github trigger"); auth.githubRedirect() }} tabIndex={-1} className="mr-1 flex border border-black rounded-xl px-3 py-1.5">
                         <GithubIcon className="mr-2 w-6 h-6 overflow-visible" />
                         <span className="text-black tracking-wide font-semibold">Github</span>
                     </button>
-                    <button type="button" onClick={() => { console.log("signup google trigger"); userState.googleRedirect() }} tabIndex={-1} className="ml-1 flex border border-orange-500 rounded-xl px-3 py-1.5">
+                    <button type="button" onClick={() => { console.log("signup google trigger"); auth.googleRedirect() }} tabIndex={-1} className="ml-1 flex border border-orange-500 rounded-xl px-3 py-1.5">
                         <GoogleIcon className="mr-5 w-3 h-3 overflow-visible" />
                         <span className="text-black tracking-wide font-semibold">Google</span>
                     </button>
@@ -62,7 +62,7 @@ function SignUp() {
                     <input id="password" type="password" placeholder="Password" required value={values.password} onChange={handleChange} onBlur={handleBlur}
                         className={`${errors.password && touched.password ? " border-red-500" : ""} border-b focus:outline-blue-500 border-gray-300 mb-2 bg-gray-50 placeholder:text-gray-700 px-3 py-1.5 rounded-sm`} />
                     <span className="text-sm text-red-500">{errors.password && touched.password ? errors.password : ""}</span>
-                    <span className="text-sm text-red-500">{!userState.status?.toLowerCase().includes("authorized") && userState.status ? userState.status : ""}</span>
+                    <span className="text-sm text-red-500">{!auth.status?.toLowerCase().includes("authorized") && auth.status ? auth.status : ""}</span>
 
                     {/* sign in */}
                     <button type="submit" className={`bg-blue-700 text-white rounded-md py-2 font-semibold tracking-wide 

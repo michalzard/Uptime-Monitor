@@ -1,6 +1,6 @@
 import Header from "./components/Header"
 import { BrowserRouter as Router, Routes, Route, Outlet, useSearchParams, useParams, useNavigate, Navigate } from "react-router-dom";
-import { useUserStore } from "./store/userStore";
+import { authStore } from "./store/authStore";
 import { useEffect } from "react";
 // TODO:lazy load this
 import LandingPage from "./components/LandingPage";
@@ -14,17 +14,17 @@ import { useAppStore } from "./store/appStore";
 import HeaderLayout from "./layouts/HeaderLayout";
 
 function App() {
-  const userState = useUserStore();
+  const auth =authStore();
   const appStore = useAppStore();
 
   useEffect(() => {
     const code = new URLSearchParams(location.search).get("code");
     const scope = new URLSearchParams(location.search).get("scope");
-    if (!userState.isLoggedIn && code) {
-      if (scope) { userState.googleAuth(code); }
-      else { userState.githubAuth(code); }
+    if (!auth.isLoggedIn && code) {
+      if (scope) { auth.googleAuth(code); }
+      else { auth.githubAuth(code); }
     } else {
-      userState.checkSession();
+      auth.checkSession();
     }
   }, [location]);
 

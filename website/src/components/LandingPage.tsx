@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowUpIcon } from "@heroicons/react/24/solid";
-import { useUserStore } from "../store/userStore";
+import { authStore } from "../store/authStore";
 
 function LandingPage() {
   const navigate = useNavigate();
-  const userState = useUserStore();
+  const auth =authStore();
   const [atBottom, setAtBottom] = useState(false);
   const rootElement = document.querySelector("#root");
 
@@ -23,7 +23,7 @@ function LandingPage() {
         <span className="text-black text-xl sm:text-3xl font-bold">Build trust with your customers</span>
         <span className="text-gray-500  text-center text-lg sm:text-xl font-semibold">Easily communicate real-time status to your customers.</span>
         <button className="bg-blue-700 text-white font-medium rounded-md py-2 px-4 mt-3" onClick={() => {
-          userState.isLoggedIn ? navigate("/dashboard") : navigate("/signup");
+          auth.isLoggedIn ? navigate("/dashboard") : navigate("/signup");
         }}>Try now for free</button>
       </section>
 

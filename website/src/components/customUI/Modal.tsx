@@ -3,22 +3,20 @@ import { Fragment, ReactNode, useState } from 'react'
 
 type DialogProps = {
     isOpen: boolean;
-    modalClose: () => void;
+    onClose: () => void;
     button: ReactNode;
     children: ReactNode | ReactNode[];
 }
 
-export function Modal({ children, button, isOpen, modalClose }: DialogProps) {
+export function Modal({ children, button, isOpen, onClose }: DialogProps) {
     return (
         <>
-            <div>
-                {
-                    button
-                }
+            {
+                button
+            }
 
-            </div>
             <Transition appear show={isOpen} as={Fragment}>
-                <Dialog as="div" className="relative z-50" onClose={modalClose}>
+                <Dialog as="div" className="relative z-50" onClose={onClose}>
                     <Transition.Child
                         as={Fragment}
                         enter="ease-out duration-300"

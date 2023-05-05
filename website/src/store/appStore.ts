@@ -1,9 +1,14 @@
 import { create } from "zustand";
 
+type Button = {
+    text: string;
+    desiredIndex: number;
+}
+
 type AppState = {
     headerIndex: number;
     customizationIndex: number;
-    customizationButtons: { text: string; desiredIndex: number }[]
+    customizationButtons: Button[];
 }
 type AppActions = {
     selectHeaderIndex: (index: number) => void;
@@ -23,7 +28,7 @@ export const useAppStore = create<AppState & AppActions>((set, get) => ({
         set({ customizationIndex: index });
     },
     selectCustomizationButtonByPath(path: string) {
-        const index = this.customizationButtons.findIndex((value) => value.text.toLowerCase() === path.toLowerCase());
+        const index = this.customizationButtons.findIndex((value) => value.text?.toLowerCase() === path?.toLowerCase());
         this.selectCustomizationButton(index);
     },
     isCustomizationButtonActive(currentIndex: number) {

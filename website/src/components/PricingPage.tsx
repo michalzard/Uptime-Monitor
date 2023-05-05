@@ -28,7 +28,7 @@ export default Pricing;
 
 const PricingPanel = (props: PricingOptions) => {
     const navigate = useNavigate();
-    const appState = useAppStore();
+    const app = useAppStore();
     return (
         <section className="w-72 h-96 flex flex-col items-center border m-2 py-2 px-4 border-slate-300 ">
             <p className="text-2xl mb-2 font-semibold tracking-wide">{props.title}</p>
@@ -39,7 +39,7 @@ const PricingPanel = (props: PricingOptions) => {
 
             </p>
             {/* TODO: add stripe integration */}
-            <button onClick={() => { appState.selectHeaderIndex(10); navigate("/signup") }} className="bg-blue-700 text-white  font-medium py-1 px-6 rounded-sm my-4">Select plan</button>
+            <button onClick={() => { app.selectHeaderIndex(10); navigate("/signup") }} className="bg-blue-700 text-white  font-medium py-1 px-6 rounded-sm my-4">Select plan</button>
             <p className="text-center px-4 font-semibold text-gray-600 mb-6"> {props.description}</p>
             <div className="overflow-auto flex flex-col items-center">
                 {
