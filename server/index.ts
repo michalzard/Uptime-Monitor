@@ -29,7 +29,9 @@ app.get("/", (req, res) => {
 
 // Routes
 import authRoute from "./routes/authRoute";
+import pageRoute from "./routes/pageRoute";
 app.use("/auth", authRoute);
+app.use("/pages", pageRoute);
 
 server.listen(process.env.PORT, () => { console.log(`Web ${process.env.NODE_ENV === "production" ? "h2" : "h1"} server is running on ${process.env.PORT}`) })
 

@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import axios from "axios";
 import { db } from "..";
 import { findSessionByToken, findUserByID, findUserByPrimaryKey, registerUser, saveToSession } from "../sql/authQuery";
-import { setHTTPOnlyCookie } from "./authController";
+import { setHTTPOnlyCookie } from "../utils/cookies";
 import { google } from "googleapis";
 import dotenv from "dotenv";
 dotenv.config();
