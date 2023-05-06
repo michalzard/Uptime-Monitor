@@ -9,7 +9,7 @@ import { Request, Response } from "express";
  * @param value cookie value
  */
 export function setHTTPOnlyCookie(res: Response, name: string, value: string) {
-    res.cookie(name, value, { httpOnly: true, secure: true });
+    res.cookie(name, value, { httpOnly: true, secure: true, maxAge: 1000 * 60 * 60 * 24 * 7 }); //7 day cookie
 }
 /**
  * Reads cookies from request headers in order to parsed them into k,v pairs
