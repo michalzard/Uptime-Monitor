@@ -1,5 +1,5 @@
 import express, { Request, Response } from "express";
-import { createPage } from "../controllers/pageController";
+import { createPage, getAllPages } from "../controllers/pageController";
 const router = express.Router();
 
 /**
@@ -8,6 +8,7 @@ const router = express.Router();
  * DELETE remove page 
  */
 router.post("/create", createPage);
+router.get("/all", getAllPages);
 router.get("/:id", /**add getter controller */);
 router.delete("/:id",/**add delete controller  */);
 

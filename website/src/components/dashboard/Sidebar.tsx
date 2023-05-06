@@ -19,12 +19,19 @@ const Sidebar = () => {
         app.selectCustomizationButtonByPath(path);
     }, [location]);
 
+    // load pages made by user
     useEffect(() => {
         page.loadAll();
     }, []);
+    // set first 
+    useEffect(() => {
+        if (page.pages.length > 0) page.selectCurrentPage(page.pages[0]);
+    }, [page.pages]);
     // used for create new page modal
     const [newPageModalOpen, setNewPageModalOpen] = useState(false);
     const [pageType, setPageType] = useState("public");
+
+    console.log(page.currentPage);
 
     if (!auth.isLoading && !auth.isLoggedIn) return <Navigate to="/" />
     return (
@@ -45,11 +52,14 @@ const Sidebar = () => {
                 <DropdownItem callback={() => auth.logout(navigate)}><ArrowLeftOnRectangleIcon className="w-5 h-5 mr-2" /> Logout</DropdownItem>
             </Dropdown>
             <p className="text-gray-400  text-sm py-2">Pages</p>
+            {/* TODO: add modal that opens menu will all the pages available */}
+            <SidebarButton text={"Page Name"} endIcon={<ChevronDownIcon className="w-6 h-6" />} />
             <article className="w-full h-10">
+
                 <Modal
                     isOpen={newPageModalOpen}
                     onClose={() => setNewPageModalOpen(false)}
-                    button={<SidebarButton onClick={() => setNewPageModalOpen(true)} text="Create new page" endIcon={<PlusIcon className="w-6 h-6" />} />}
+                    button={<SidebarButton onClick={() => setNewPageModalOpen(true)} text={"Create new page"} endIcon={<PlusIcon className="w-6 h-6" />} />}
                 >
                     <ModalTitle>Add new page to your account</ModalTitle>
                     <ModalContent>
