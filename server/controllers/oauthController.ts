@@ -1,10 +1,11 @@
 import { Request, Response } from "express";
 import axios from "axios";
 import { db } from "..";
-import { findSessionByToken, findUserByID, findUserByPrimaryKey, registerUser, saveToSession } from "../sql/authQuery";
+import { findUserByID, registerUser, saveToSession } from "../sql/authQuery";
 import { setHTTPOnlyCookie } from "../utils/cookies";
 import { google } from "googleapis";
 import dotenv from "dotenv";
+import { createId } from "@paralleldrive/cuid2";
 dotenv.config();
 
 export async function userGithubAccess(req: Request, res: Response) {
@@ -41,12 +42,13 @@ export async function userGithubAccess(req: Request, res: Response) {
                             const userByGithubId = await db.query(findUserByID, [githubID]);
                             const githubUser = userByGithubId.rows[0];
                             if (githubUser) {
-                                const { id, pk, username, email } = githubUser;
-                                const saving = await db.query(saveToSession, [id, pk, "github"]);
+                                const { pk, username, email } = githubUser;
+                                const sessionID = createId();
+                                const saving = await db.query(saveToSession, [sessionID, pk, "github"]);
                                 const session = saving.rows[0];
                                 // already exists return new session with existing data
                                 if (session) {
-                                    setHTTPOnlyCookie(res, "sessionID", id);
+                                    setHTTPOnlyCookie(res, "sessionID", sessionID);
                                     res.status(200).send({ message: "Github Authorized", user: { username, email, service: session?.service } });
                                 } else {
                                     res.status(404).send({ message: "Issue authorizing github user" });
@@ -58,10 +60,11 @@ export async function userGithubAccess(req: Request, res: Response) {
                                 const user = registration.rows[0];
                                 if (user) {
                                     const { pk, username, email } = user;
-                                    const saving = await db.query(saveToSession, [githubID, pk, "github"]);
+                                    const sessionID = createId();
+                                    const saving = await db.query(saveToSession, [sessionID, pk, "github"]);
                                     const session = saving.rows[0];
                                     if (session) {
-                                        setHTTPOnlyCookie(res, "sessionID", githubID);
+                                        setHTTPOnlyCookie(res, "sessionID", sessionID);
                                         res.status(200).send({ message: "Github Authorized", user: { username, email, avatar_url, service: session.service } });
                                     } else {
 
@@ -135,8 +138,7 @@ export async function userGoogleAccess(req: Request, res: Response) {
                 const user = isAlreayRegged.rows[0];
                 if (user) {
                     // create session and login
-
-                    const saving = await db.query(saveToSession, [id, user.pk, "google"]);
+                    const saving = await db.query(saveToSession, [createId(), user.pk, "google"]);
                     const session = saving.rows[0];
                     const { token, service } = session;
                     if (session) {
@@ -152,7 +154,7 @@ export async function userGoogleAccess(req: Request, res: Response) {
                     const user = registered.rows[0];
                     if (user) {
                         const { pk, username, email, avatar_url } = user;
-                        const savingSession = await db.query(saveToSession, [id, pk, "google"]);
+                        const savingSession = await db.query(saveToSession, [createId(), pk, "google"]);
                         const session = savingSession.rows[0];
                         if (session) {
                             const { token, service } = session;

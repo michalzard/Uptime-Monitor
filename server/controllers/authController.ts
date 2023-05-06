@@ -91,6 +91,7 @@ export async function userLogout(req: Request, res: Response) {
     }
 }
 
+// FIXME:have session token be uuid and have it refreshed on expiry
 export async function userSession(req: Request, res: Response) {
     const cookies = readCookiesFromHeaders(req);
     try {
@@ -105,7 +106,7 @@ export async function userSession(req: Request, res: Response) {
             res.status(200).send({ message: "Authorized", user: { username, email, avatar_url, service: session.service } });
         } else {
             res.clearCookie("sessionID");
-            res.status(304).send({ message: "Unauthorized" });
+            res.status(404).send({ message: "Unauthorized" });
         }
     } catch (err) {
         // handle error
