@@ -41,7 +41,7 @@ export const authStore = create<UserState & UserActions>((set, get) => ({
     user: null,
     isLoggedIn: false,
     status: "",
-    isLoading: false,
+    isLoading: true,
     register: async (values: RegisterValues, navigate: NavigateFunction) => {
         set({ isLoading: true });
         await axios.post(`${import.meta.env.VITE_API_URL}/auth/register`, { ...values }, { withCredentials: true }).then(res => {

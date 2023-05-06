@@ -5,7 +5,7 @@ import { authStore } from "../store/authStore";
 
 function LandingPage() {
   const navigate = useNavigate();
-  const auth =authStore();
+  const auth = authStore();
   const [atBottom, setAtBottom] = useState(false);
   const rootElement = document.querySelector("#root");
 
@@ -64,7 +64,7 @@ type LandingArcticleProps = {
 function FeatureArcticle({ header, title, description, imgSrc, orientation = "left" }: LandingArcticleProps) {
   const [imgLoaded, setImgLoaded] = useState(false);
   return (
-    <article className={`w-full py-3 ${orientation === "left" ? "flex flex-row" : "flex flex-row-reverse"} justify-center items-center flex-wrap`}>
+    <article className={`w-full py-3 flex  ${orientation === "left" ? "flex-row" : "flex-row-reverse"} justify-center items-center flex-wrap`}>
       <section className={`flex flex-1 max-w-lg flex-col ${orientation === "left" ? "text-right" : "text-left"}`}>
         <span className="text-gray-500 text-sm tracking-wide uppercase mb-2">{header}</span>
         <span className="text-black font-bold text-xl sm:text-3xl mb-4">{title}</span>

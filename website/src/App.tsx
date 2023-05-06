@@ -14,8 +14,7 @@ import { useAppStore } from "./store/appStore";
 import HeaderLayout from "./layouts/HeaderLayout";
 
 function App() {
-  const auth =authStore();
-  const appStore = useAppStore();
+  const auth = authStore();
 
   useEffect(() => {
     const code = new URLSearchParams(location.search).get("code");

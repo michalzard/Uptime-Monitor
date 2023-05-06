@@ -1,6 +1,6 @@
 import { ArrowLeftOnRectangleIcon, ArrowTopRightOnSquareIcon, BanknotesIcon, ChevronDownIcon, ExclamationTriangleIcon, EyeIcon, EyeSlashIcon, GlobeAltIcon, GlobeAsiaAustraliaIcon, GlobeEuropeAfricaIcon, PlusIcon, RadioIcon, UserIcon } from "@heroicons/react/24/solid";
 import { authStore } from "../../store/authStore";
-import { useLocation, useNavigate } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { useAppStore } from "../../store/appStore";
 import { ReactNode, useEffect, useState } from "react";
 import { Modal, ModalActions, ModalContent, ModalTitle } from "../customUI/Modal";
@@ -19,8 +19,14 @@ const Sidebar = () => {
         app.selectCustomizationButtonByPath(path);
     }, [location]);
 
+    useEffect(() => {
+        page.loadAll();
+    }, []);
+    // used for create new page modal
     const [newPageModalOpen, setNewPageModalOpen] = useState(false);
     const [pageType, setPageType] = useState("public");
+
+    if (!auth.isLoading && !auth.isLoggedIn) return <Navigate to="/" />
     return (
         <aside className="w-72 h-full bg-slate-50 border-r-2 p-3">
             <p className="text-gray-400 text-sm py-1">Account</p>
