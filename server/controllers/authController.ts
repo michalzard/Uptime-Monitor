@@ -103,6 +103,7 @@ export async function userSession(req: Request, res: Response) {
             const sessionUserByPK = await db.query(findUserByPrimaryKey, [userPK]);
             const foundUser = sessionUserByPK.rows[0];
             const { username, email, avatar_url } = foundUser;
+
             res.status(200).send({ message: "Authorized", user: { username, email, avatar_url, service: session.service } });
         } else {
             res.clearCookie("sessionID");

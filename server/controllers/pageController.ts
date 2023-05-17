@@ -20,9 +20,10 @@ export async function createPage(req: Request, res: Response) {
         const { user_pk } = session;
         if (user_pk) {
             const pages = await db.query(createNewPage, [user_pk, createId(), name, isPublic]);
+            // pageName alias so that it doesnt clash with name from request body
             const { id, name: pageName, ispublic } = pages.rows[0];
             if (id) {
-                res.status(200).send({ message: "Page created successfully", page: { id, pageName, isPublic: ispublic } });
+                res.status(200).send({ message: "Page created successfully", page: { id, name: pageName, isPublic: ispublic } });
             } else {
                 res.status(400).send({ message: "Page creation error" });
             }
