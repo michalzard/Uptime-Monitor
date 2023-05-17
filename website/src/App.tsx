@@ -1,20 +1,19 @@
 import Header from "./components/Header"
 import { BrowserRouter as Router, Routes, Route, Outlet, useSearchParams, useParams, useNavigate, Navigate } from "react-router-dom";
-import { authStore } from "./store/authStore";
+import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
 // TODO:lazy load this
-import LandingPage from "./components/LandingPage";
+import LandingPage from "./pages/LandingPage";
 import SignUp from "./components/auth/SignUp";
 import SignIn from "./components/auth/SignIn";
 import DashboardLayout from "./layouts/DashboardLayout";
-import Pricing from "./components/PricingPage";
-import Community from "./components/community/Community";
-import Docs from "./components/docs/Docs";
-import { useAppStore } from "./store/appStore";
+import PricingPage from "./pages/PricingPage";
+import CommunityPage from "./pages/CommunityPage";
+import DocumentationPage from "./pages/DocumentationPage";
 import HeaderLayout from "./layouts/HeaderLayout";
 
 function App() {
-  const auth = authStore();
+  const auth = useAuthStore();
 
   useEffect(() => {
     const code = new URLSearchParams(location.search).get("code");
@@ -30,8 +29,9 @@ function App() {
   return (
     <Router>
       <Routes>
-        {/* Landing Page */}
+
         <Route element={<HeaderLayout />}>
+          {/* Landing Page */}
           <Route path="" element={<LandingPage />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="signin" element={<SignIn />} />
@@ -39,29 +39,39 @@ function App() {
 
         {/* Pricing */}
         <Route path="/pricing" element={<HeaderLayout />}>
-          <Route path="" element={<Pricing />} />
+          <Route path="" element={<PricingPage />} />
         </Route>
         {/* Community */}
         <Route path="/community" element={<HeaderLayout />}>
-          <Route path="" element={<Community />} />
+          <Route path="" element={<CommunityPage />}>
+          </Route>
         </Route>
         {/* Documentation */}
         <Route path="/docs" element={<HeaderLayout />}>
-          <Route path="" element={<Docs />} />
+          <Route path="" element={<DocumentationPage />}>
+          </Route>
+        </Route>
+        {/* Status Page  */}
+        <Route path="/page">
+          <Route path=":id" element={<div className="w-full h-full flex items-center justify-center bg-slate-50 text-7xl font-bold ">Status page</div>} />
         </Route>
 
         {/* Dashboard(Protected) */}
-
         <Route path="/dashboard" element={<HeaderLayout />}>
           <Route path="" element={<DashboardLayout />}>
-            {/* user */}
-            <Route path="profile" element={<section>Profile Section</section>} />
-            <Route path="billing" element={<section>Billing Section</section>} />
-            {/* customization buttons */}
-            <Route path="incidents" element={<section>Incidents Section</section>} />
-            <Route path="components" element={<section>Component Section</section>} />
-            <Route path="listeners" element={<section>Listener email list Section</section>} />
-            {/* page related */}
+            {/* user routes */}
+            <Route path="user">
+              <Route path="profile" element={<div>User Profile Section</div>} />
+              <Route path="billing" element={<div>User Billing Section</div>} />
+            </Route>
+
+            {/* page related by id */}
+            <Route path=":id">
+              {/* customization buttons */}
+              <Route path="incidents" element={<section>Incidents Section</section>} />
+              <Route path="components" element={<section>Component Section</section>} />
+              <Route path="subscribers" element={<section>Subscriber email list Section</section>} />
+            </Route>
             <Route path="pages">
               <Route path="create" element={<section>Pages create section</section>} />
             </Route>

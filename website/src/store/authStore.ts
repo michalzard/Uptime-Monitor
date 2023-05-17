@@ -37,7 +37,7 @@ export type LoginValues = {
     password: string;
 }
 
-export const authStore = create<UserState & UserActions>((set, get) => ({
+export const useAuthStore = create<UserState & UserActions>((set, get) => ({
     user: null,
     isLoggedIn: false,
     status: "",
@@ -74,7 +74,15 @@ export const authStore = create<UserState & UserActions>((set, get) => ({
     },
     checkSession: async () => {
         set({ isLoading: true });
-        axios.get(`${import.meta.env.VITE_API_URL}/auth/session`, { withCredentials: true }).then(res => {
+        axios.get(`${import.meta.env.VITE_API_URL}/auth/session`, {
+            withCredentials: true,
+            // caching disabled this need fresh data every call
+            headers: {
+                "Cache-Control": "no-cache",
+                "Pragma": "no-cache",
+                "Expires": "0",
+            }
+        }).then(res => {
             const { user, message } = res.data;
             set({ user, isLoggedIn: true, isLoading: false, status: message });
         }).catch(err => {
@@ -105,7 +113,6 @@ export const authStore = create<UserState & UserActions>((set, get) => ({
                 set({ isLoading: false });
                 window.location.href = location;
             }
-            console.log(window.location);
         }).catch(err => {
             set({ isLoading: false, status: err.response.data.message });
         })
@@ -117,7 +124,7 @@ export const authStore = create<UserState & UserActions>((set, get) => ({
             set({ user, isLoggedIn: true, isLoading: false, status: message });
         }).catch(err => {
             window.location.href = import.meta.env.VITE_CLIENT_URL;
-            set({ isLoading: false, status: err.response.data.message });
+            set({ isLoading: false, isLoggedIn: false, status: err.response.data.message });
         })
     },
 

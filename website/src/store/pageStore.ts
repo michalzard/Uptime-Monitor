@@ -1,7 +1,9 @@
 import { create } from "zustand";
 import axios from "axios";
+import { NavigateFunction } from "react-router-dom";
 
 type Page = {
+    id: string;
     name: string;
     isPublic: boolean;
 }
@@ -13,9 +15,9 @@ type PageState = {
     isLoading: boolean;
 }
 type PageActions = {
-    create: (values: Page) => void;
+    create: (values: { name: string, isPublic: boolean }) => void;
     selectCurrentPage: (page: Page) => void;
-    loadAll: () => void;
+    loadAll: (navigate: NavigateFunction) => void;
 }
 
 export const usePageStore = create<PageState & PageActions>((set, get) => ({
@@ -23,7 +25,7 @@ export const usePageStore = create<PageState & PageActions>((set, get) => ({
     status: "",
     isLoading: false,
     currentPage: null,
-    create: (values: Page) => {
+    create: (values: { name: string, isPublic: boolean }) => {
         set({ isLoading: true });
         axios.post(`${import.meta.env.VITE_API_URL}/pages/create`, { ...values }, { withCredentials: true }).then(res => {
             const { message, page }: { message: string, page: Page } = res.data;
@@ -32,11 +34,12 @@ export const usePageStore = create<PageState & PageActions>((set, get) => ({
             set({ isLoading: false, status: err.response.data.message });
         });
     },
-    loadAll: () => {
-        set({ isLoading: true })
+    loadAll: (navigate: NavigateFunction) => {
+        set({ isLoading: true });
         axios.get(`${import.meta.env.VITE_API_URL}/pages/all`, { withCredentials: true }).then(res => {
             const { message, pages }: { message: string, pages: Page[] } = res.data;
-            set({ isLoading: false, status: message, pages });
+            set({ isLoading: false, status: message, pages, currentPage: pages[0] });
+            if (pages.length > 0) navigate(`/dashboard/${pages[0].id}/incidents`);
         }).catch(err => {
             set({ isLoading: false, status: err.response.data.message });
         })

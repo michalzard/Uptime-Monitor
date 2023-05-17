@@ -20,7 +20,7 @@ type AppActions = {
 export const useAppStore = create<AppState & AppActions>((set, get) => ({
     headerIndex: -1,
     customizationIndex: 0,
-    customizationButtons: [{ text: "Incidents", desiredIndex: 0 }, { text: "Components", desiredIndex: 1 }, { text: "Listeners", desiredIndex: 2 }],
+    customizationButtons: [{ text: "Incidents", desiredIndex: 0 }, { text: "Components", desiredIndex: 1 }, { text: "Subscribers", desiredIndex: 2 }],
     selectHeaderIndex(index: number) {
         set({ headerIndex: index });
     },

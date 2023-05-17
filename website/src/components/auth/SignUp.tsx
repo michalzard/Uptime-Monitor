@@ -1,13 +1,13 @@
 import * as yup from "yup";
 import { useFormik } from "formik";
 import { Navigate, useNavigate } from "react-router-dom";
-import { authStore } from '../../store/authStore';
+import { useAuthStore } from '../../store/authStore';
 import { GithubIcon, GoogleIcon, LoadingSpinner } from "../../Icons";
 
 
 function SignUp() {
     const navigate = useNavigate();
-    const auth = authStore();
+    const auth = useAuthStore();
 
     const signupValidation = yup.object({
         username: yup.string().required().min(5).max(30).trim(),

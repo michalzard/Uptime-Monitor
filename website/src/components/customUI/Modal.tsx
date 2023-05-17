@@ -1,5 +1,5 @@
 import { Dialog, Transition } from '@headlessui/react'
-import { Fragment, ReactNode, useState } from 'react'
+import { Fragment, ReactNode } from 'react'
 
 type DialogProps = {
     isOpen: boolean;
@@ -7,6 +7,16 @@ type DialogProps = {
     button: ReactNode;
     children: ReactNode | ReactNode[];
 }
+type ModalChildrenProps = {
+    children: ReactNode | ReactNode[];
+}
+export type ModalTitleProps = ModalChildrenProps;
+export type ModalContentProps = ModalChildrenProps;
+type ModalActionsOrientation = {
+    orientation?: "left" | "right";
+}
+export type ModalActionsProps = ModalChildrenProps & ModalActionsOrientation;
+
 
 export function Modal({ children, button, isOpen, onClose }: DialogProps) {
     return (
@@ -52,15 +62,6 @@ export function Modal({ children, button, isOpen, onClose }: DialogProps) {
     )
 }
 
-type ModalChildrenProps = {
-    children: ReactNode | ReactNode[];
-}
-export type ModalTitleProps = ModalChildrenProps;
-export type ModalContentProps = ModalChildrenProps;
-type ModalActionsOrientation = {
-    orientation?: "left" | "right";
-}
-export type ModalActionsProps = ModalChildrenProps & ModalActionsOrientation;
 // h3 
 export function ModalTitle({ children }: ModalTitleProps) {
     return (

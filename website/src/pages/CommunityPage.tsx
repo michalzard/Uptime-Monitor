@@ -1,6 +1,6 @@
 import { UserGroupIcon } from "@heroicons/react/24/solid";
 
-export default function Community() {
+export default function CommunityPage() {
     return (
         <main className="w-full h-full bg-slate-50 flex flex-col">
             <article className="w-full h-96 bg-slate-100 flex flex-col justify-center items-center px-10">

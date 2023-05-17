@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowUpIcon } from "@heroicons/react/24/solid";
-import { authStore } from "../store/authStore";
+import { useAuthStore } from "../store/authStore";
 
 function LandingPage() {
   const navigate = useNavigate();
-  const auth = authStore();
+  const auth = useAuthStore();
   const [atBottom, setAtBottom] = useState(false);
   const rootElement = document.querySelector("#root");
 
