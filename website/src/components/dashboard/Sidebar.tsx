@@ -8,7 +8,7 @@ import { usePageStore } from "../../store/pageStore";
 import PageDropdown from "./Page/PageDropdown";
 import { LoadingSpinner } from "../../Icons";
 import NewPageModal from "./Page/NewPageModal";
-
+import Drawer from "../customUI/Drawer";
 
 type SidebarButtonProps = {
     text: string;
@@ -20,13 +20,14 @@ type SidebarButtonProps = {
     hidden?: boolean;
 }
 
-const Sidebar = () => {
+function Sidebar() {
     const auth = useAuthStore();
     const app = useAppStore();
     const page = usePageStore();
     const navigate = useNavigate();
     const location = useLocation();
     const [newPageModalOpen, setNewPageModalOpen] = useState(false);
+    const [drawerOpen, setDrawerOpen] = useState(false);
     useEffect(() => {
         page.loadAll(navigate);
     }, []);
@@ -38,55 +39,59 @@ const Sidebar = () => {
 
     if (!auth.isLoading && !auth.isLoggedIn) return <Navigate to="/" />
     return (
-        <aside className="w-72 h-full bg-slate-50 border-r-2 p-3">
-            <p className="text-gray-400 text-sm py-1">Account</p>
-            <Dropdown button={
-                <article className="w-full h-10 flex justify-between items-center px-2 bg-gray-100 hover:bg-blue-200 cursor-pointer rounded-md">
-                    <section className="flex">
-                        <img className="rounded-full w-6 h-6" src={auth.user?.avatar_url} referrerPolicy="no-referrer" />
-                        <span className="text-black font-semibold text-md ml-2">{auth.user?.username}</span>
-                    </section>
-                    <ChevronDownIcon className="w-6 h-6" />
+        <>
+            <aside className="w-72 h-full bg-slate-50 border-r-2 p-3 hidden lg:flex lg:flex-col">
+                <p className="text-gray-400 text-sm py-1">Account</p>
+                <Dropdown button={
+                    <article className="w-full h-10 flex justify-between items-center px-2 bg-gray-100 hover:bg-blue-200 cursor-pointer rounded-md">
+                        <section className="flex">
+                            <img className="rounded-full w-6 h-6" src={auth.user?.avatar_url} referrerPolicy="no-referrer" />
+                            <span className="text-black font-semibold text-md ml-2">{auth.user?.username}</span>
+                        </section>
+                        <ChevronDownIcon className="w-6 h-6" />
+                    </article>
+
+                }>
+                    <DropdownItem callback={() => navigate("/dashboard/user/profile")}><UserIcon className="w-5 h-5 mr-2" /> User Profile</DropdownItem>
+                    <DropdownItem callback={() => navigate("/dashboard/user/billing")}><BanknotesIcon className="w-5 h-5 mr-2" />  Billing</DropdownItem>
+                    <DropdownItem callback={() => auth.logout(navigate)}><ArrowLeftOnRectangleIcon className="w-5 h-5 mr-2" /> Logout</DropdownItem>
+                </Dropdown>
+                <p className="text-gray-400  text-sm py-2">Pages</p>
+                <article className="w-full h-10">
+                    {
+                        page.isLoading ? <LoadingSpinner className="w-2 h-2 overflow-visible text-blue-600" /> :
+                            page.pages.length > 0 ? <PageDropdown /> :
+                                <NewPageModal isOpen={newPageModalOpen} open={() => setNewPageModalOpen(true)} close={() => setNewPageModalOpen(false)} />
+                    }
                 </article>
-
-            }>
-                <DropdownItem callback={() => navigate("/dashboard/user/profile")}><UserIcon className="w-5 h-5 mr-2" /> User Profile</DropdownItem>
-                <DropdownItem callback={() => navigate("/dashboard/user/billing")}><BanknotesIcon className="w-5 h-5 mr-2" />  Billing</DropdownItem>
-                <DropdownItem callback={() => auth.logout(navigate)}><ArrowLeftOnRectangleIcon className="w-5 h-5 mr-2" /> Logout</DropdownItem>
-            </Dropdown>
-            <p className="text-gray-400  text-sm py-2">Pages</p>
-            <article className="w-full h-10">
                 {
-                    page.isLoading ? <LoadingSpinner className="w-2 h-2 overflow-visible text-blue-600" /> :
-                        page.pages.length > 0 ? <PageDropdown /> :
-                            <NewPageModal isOpen={newPageModalOpen} open={() => setNewPageModalOpen(true)} close={() => setNewPageModalOpen(false)} />
-                }
-            </article>
-            {
-                page.pages.length > 0 ?
-                    <>
-                        <p className="text-gray-400  text-sm py-2">Customization</p>
-                        <article>
-                            {
-                                app.customizationButtons.map(btn => (
-                                    <section key={btn.desiredIndex}>
-                                        <SidebarButton selectIndex={btn.desiredIndex} text={btn.text} link={`${page.currentPage?.id}/${btn.text}`} />
-                                    </section>
-                                ))
-                            }
-                        </article>
+                    page.pages.length > 0 ?
+                        <>
+                            <p className="text-gray-400  text-sm py-2">Customization</p>
+                            <article>
+                                {
+                                    app.customizationButtons.map(btn => (
+                                        <section key={btn.desiredIndex}>
+                                            <SidebarButton selectIndex={btn.desiredIndex} text={btn.text} link={`${page.currentPage?.id}/${btn.text}`} />
+                                        </section>
+                                    ))
+                                }
+                            </article>
 
-                        <article className="flex flex-col">
-                            <hr className="w-full mb-1" />
-                            <span className="text-gray-400 text-sm px-1">Shortcuts</span>
-                            <SidebarButton selectIndex={4} text="View your page"
-                                onClick={() => { window.location.href = `${import.meta.env.VITE_CLIENT_URL}/page/${page.currentPage?.id}` }}
-                                endIcon={<ArrowTopRightOnSquareIcon className="w-5 h-5 " />} />
-                        </article>
-                    </>
-                    : null
-            }
-        </aside >
+                            <article className="flex flex-col">
+                                <hr className="w-full mb-1" />
+                                <span className="text-gray-400 text-sm px-1">Shortcuts</span>
+                                <SidebarButton selectIndex={4} text="View your page"
+                                    onClick={() => { window.location.href = `${import.meta.env.VITE_CLIENT_URL}/page/${page.currentPage?.id}` }}
+                                    endIcon={<ArrowTopRightOnSquareIcon className="w-5 h-5 " />} />
+                            </article>
+                        </>
+                        : null
+                }
+                <button onClick={() => setDrawerOpen(true)}>Test Drawer</button>
+            </aside>
+            <Drawer isOpen={drawerOpen} close={() => setDrawerOpen(false)} />
+        </>
     )
 }
 
