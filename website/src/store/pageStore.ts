@@ -39,7 +39,8 @@ export const usePageStore = create<PageState & PageActions>((set, get) => ({
         axios.get(`${import.meta.env.VITE_API_URL}/pages/all`, { withCredentials: true }).then(res => {
             const { message, pages }: { message: string, pages: Page[] } = res.data;
             set({ isLoading: false, status: message, pages, currentPage: pages[0] });
-            if (pages.length > 0) navigate(`/dashboard/${pages[0].id}/incidents`);
+            //FIXME: handle it so it doesnt redirect when on like user/profile or somewhere outside dashboard layout
+            if (pages.length > 0) navigate(`/dashboard/${pages[0].id}/incidents`); 
         }).catch(err => {
             set({ isLoading: false, status: err.response.data.message });
         })

@@ -11,6 +11,8 @@ import PricingPage from "./pages/PricingPage";
 import CommunityPage from "./pages/CommunityPage";
 import DocumentationPage from "./pages/DocumentationPage";
 import HeaderLayout from "./layouts/HeaderLayout";
+import UserProfilePage from "./pages/UserProfilePage";
+import UserBillingPage from "./pages/UserBillingPage";
 
 function App() {
   const auth = useAuthStore();
@@ -31,7 +33,6 @@ function App() {
       <Routes>
 
         <Route element={<HeaderLayout />}>
-          {/* Landing Page */}
           <Route path="" element={<LandingPage />} />
           <Route path="signup" element={<SignUp />} />
           <Route path="signin" element={<SignIn />} />
@@ -61,8 +62,8 @@ function App() {
           <Route path="" element={<DashboardLayout />}>
             {/* user routes */}
             <Route path="user">
-              <Route path="profile" element={<div>User Profile Section</div>} />
-              <Route path="billing" element={<div>User Billing Section</div>} />
+              <Route path="profile" element={<UserProfilePage />} />
+              <Route path="billing" element={<UserBillingPage />} />
             </Route>
 
             {/* page related by id */}
