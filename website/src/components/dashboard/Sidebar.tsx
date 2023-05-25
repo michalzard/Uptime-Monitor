@@ -8,7 +8,6 @@ import { usePageStore } from "../../store/pageStore";
 import PageDropdown from "./Page/PageDropdown";
 import { LoadingSpinner } from "../../Icons";
 import NewPageModal from "./Page/NewPageModal";
-import Drawer from "../customUI/Drawer";
 
 type SidebarButtonProps = {
     text: string;
@@ -20,27 +19,28 @@ type SidebarButtonProps = {
     hidden?: boolean;
 }
 
-function Sidebar() {
+type SidebarProps = {
+    hide?: boolean;
+    fullWidth?: boolean;
+    closeDrawer: () => void;
+}
+
+function Sidebar({ hide = false, fullWidth = false, closeDrawer }: SidebarProps) {
     const auth = useAuthStore();
     const app = useAppStore();
     const page = usePageStore();
     const navigate = useNavigate();
     const location = useLocation();
     const [newPageModalOpen, setNewPageModalOpen] = useState(false);
-    const [drawerOpen, setDrawerOpen] = useState(false);
-    useEffect(() => {
-        page.loadAll(navigate);
-    }, []);
 
     useEffect(() => {
         const path = location.pathname.split("/").filter(l => { if (l !== "dashboard") { return l } else return null })[0];
         app.selectCustomizationButtonByPath(path);
     }, [location]);
-
     if (!auth.isLoading && !auth.isLoggedIn) return <Navigate to="/" />
     return (
         <>
-            <aside className="w-72 h-full bg-slate-50 border-r-2 p-3 hidden lg:flex lg:flex-col">
+            <aside className={`${fullWidth ? "w-full" : "w-72"} h-full bg-slate-50 border-r-2 p-3 ${hide ? "hidden" : "visible"}  lg:flex lg:flex-col`}>
                 <p className="text-gray-400 text-sm py-1">Account</p>
                 <Dropdown button={
                     <article className="w-full h-10 flex justify-between items-center px-2 bg-gray-100 hover:bg-blue-200 cursor-pointer rounded-md">
@@ -52,9 +52,9 @@ function Sidebar() {
                     </article>
 
                 }>
-                    <DropdownItem callback={() => navigate("/dashboard/user/profile")}><UserIcon className="w-5 h-5 mr-2" /> User Profile</DropdownItem>
-                    <DropdownItem callback={() => navigate("/dashboard/user/billing")}><BanknotesIcon className="w-5 h-5 mr-2" />  Billing</DropdownItem>
-                    <DropdownItem callback={() => auth.logout(navigate)}><ArrowLeftOnRectangleIcon className="w-5 h-5 mr-2" /> Logout</DropdownItem>
+                    <DropdownItem callback={() => { navigate("/dashboard/user/profile"); closeDrawer(); }}><UserIcon className="w-5 h-5 mr-2" /> User Profile</DropdownItem>
+                    <DropdownItem callback={() => { navigate("/dashboard/user/billing"); closeDrawer(); }}><BanknotesIcon className="w-5 h-5 mr-2" />  Billing</DropdownItem>
+                    <DropdownItem callback={() => { auth.logout(navigate); closeDrawer(); }}><ArrowLeftOnRectangleIcon className="w-5 h-5 mr-2" /> Logout</DropdownItem>
                 </Dropdown>
                 <p className="text-gray-400  text-sm py-2">Pages</p>
                 <article className="w-full h-10">
@@ -88,9 +88,8 @@ function Sidebar() {
                         </>
                         : null
                 }
-                <button onClick={() => setDrawerOpen(true)}>Test Drawer</button>
             </aside>
-            <Drawer isOpen={drawerOpen} close={() => setDrawerOpen(false)} />
+
         </>
     )
 }
