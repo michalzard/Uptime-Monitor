@@ -41,7 +41,7 @@ const PricingPanel = (props: PricingOptions) => {
 
             </p>
             {/* TODO: add stripe integration */}
-            <button onClick={() => { app.selectHeaderIndex(10); auth.isLoggedIn ? navigate("/dashboard") : navigate("/signup") }} className="bg-blue-700 text-white  font-medium py-1 px-6 rounded-sm my-4">Select plan</button>
+            <button onClick={() => { app.selectHeaderIndex(10); auth.isLoggedIn ? navigate("/dashboard") : navigate("/signup") }} className="bg-blue-700 text-white font-medium py-1 px-6 rounded my-4">Select plan</button>
             <p className="text-center px-4 font-semibold text-gray-600 mb-6"> {props.description}</p>
             <div className="overflow-auto flex flex-col items-center">
                 {
