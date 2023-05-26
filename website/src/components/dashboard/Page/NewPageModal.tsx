@@ -6,6 +6,7 @@ import { useState } from "react";
 import { usePageStore } from "../../../store/pageStore";
 import { useFormik } from "formik";
 import * as yup from "yup";
+import { useNavigate } from "react-router-dom";
 
 type NewPageModalProps = {
     isOpen: boolean;
@@ -15,6 +16,7 @@ type NewPageModalProps = {
 }
 function NewPageModal({ isOpen, close, open, hidden = false }: NewPageModalProps) {
     const page = usePageStore();
+    const navigate = useNavigate();
     const [pageType, setPageType] = useState("public");
     const pageValidation = yup.object({
         name: yup.string().min(3).max(20).required("Page name is required"),
@@ -27,7 +29,7 @@ function NewPageModal({ isOpen, close, open, hidden = false }: NewPageModalProps
         },
         validationSchema: pageValidation,
         onSubmit: (values, form) => {
-            if (values) { page.create({ name: values.name, isPublic: values.type === "public" }); close(); }
+            if (values) { page.create({ name: values.name, isPublic: values.type === "public" }, navigate); close(); }
             form.resetForm();
         },
     })
