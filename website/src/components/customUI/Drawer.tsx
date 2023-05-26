@@ -92,7 +92,7 @@ export function SwipeableDrawer({ isOpen, open, close, swipeableArea = 40, child
 
     return (
         <>
-            <div ref={swipeableAreaRef} style={{ width: `${swipeableArea}px` }} className={`fixed z-50 top-0 left-0 h-screen ${isOpen ? "hidden" : "visible"}`} />
+            <div ref={swipeableAreaRef} style={{ width: `${swipeableArea}px` }} className={`fixed z-50 top-0 left-0 h-screen ${isOpen ? "hidden" : "visible"} lg:hidden`} />
             <Drawer isOpen={isOpen} close={() => { close(); }}>
                 {children}
             </Drawer>
