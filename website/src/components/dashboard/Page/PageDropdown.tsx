@@ -5,7 +5,7 @@ import { useState } from "react";
 import NewPageModal from "./NewPageModal";
 import { useNavigate } from "react-router-dom";
 
-function PageDropdown() {
+function PageDropdown({ closeDrawer }: { closeDrawer?: () => void }) {
     const page = usePageStore();
     const [openNewPageModal, setOpenNewPageModal] = useState(false);
     const navigate = useNavigate();
@@ -20,11 +20,14 @@ function PageDropdown() {
                 }
             >
                 {
-                    page.pages.map(p => <DropdownItem key={p.id} callback={() => { navigate(`/dashboard/${p.id}/incidents`); page.selectCurrentPage(p); }}>
+                    page.pages.map(p => <DropdownItem key={p.id} callback={() => {
+                        navigate(`/dashboard/${p.id}/incidents`); page.selectCurrentPage(p);
+                        if (closeDrawer) closeDrawer();
+                    }}>
                         {p.name}
                     </DropdownItem>)
                 }
-                <DropdownItem className="justify-between" callback={() => setOpenNewPageModal(true)}>
+                <DropdownItem className="justify-between" callback={() => { setOpenNewPageModal(true); }}>
                     Create new page <PlusIcon className="w-5 h-5 " />
                 </DropdownItem>
             </Dropdown>

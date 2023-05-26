@@ -60,7 +60,7 @@ function Sidebar({ hide = false, fullWidth = false, closeDrawer }: SidebarProps)
                 <article className="w-full h-10">
                     {
                         page.isLoading ? <LoadingSpinner className="w-2 h-2 overflow-visible text-blue-600" /> :
-                            page.pages.length > 0 ? <PageDropdown /> :
+                            page.pages.length > 0 ? <PageDropdown closeDrawer={closeDrawer} /> :
                                 <NewPageModal isOpen={newPageModalOpen} open={() => setNewPageModalOpen(true)} close={() => setNewPageModalOpen(false)} />
                     }
                 </article>
@@ -72,7 +72,7 @@ function Sidebar({ hide = false, fullWidth = false, closeDrawer }: SidebarProps)
                                 {
                                     app.customizationButtons.map(btn => (
                                         <section key={btn.desiredIndex}>
-                                            <SidebarButton selectIndex={btn.desiredIndex} text={btn.text} link={`${page.currentPage?.id}/${btn.text}`} />
+                                            <SidebarButton onClick={() => closeDrawer()} selectIndex={btn.desiredIndex} text={btn.text} link={`${page.currentPage?.id}/${btn.text}`} />
                                         </section>
                                     ))
                                 }
