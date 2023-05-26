@@ -3,6 +3,7 @@ import Sidebar from "../components/dashboard/Sidebar";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
 import { usePageStore } from "../store/pageStore";
 import { SwipeableDrawer } from "../components/customUI/Drawer";
+import { ArrowLeftIcon } from "@heroicons/react/24/solid";
 function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -25,10 +26,15 @@ function Dashboard() {
         <Sidebar fullWidth={true} closeDrawer={() => setDrawerOpen(false)} />
       </SwipeableDrawer>
       <Outlet />
-      <section>
-        {page.pages.length === 0 ? "Create Page first" : null}
-      </section>
-    </main>
+      {page.pages.length === 0 && location.pathname === "/dashboard" ?
+        <section className="w-full h-full flex flex-col items-center justify-center bg-center bg-no-repeat bg-contain"
+          style={{ backgroundImage: `url(/dashboard/createpage.png)` }} >
+          <span className="text-white font-semibold text-3xl lg:text-4xl">Start by creating new page </span>
+          {/* <ArrowLeftIcon className="w-8 h-8 lg:w-10 lg:h-10 text-white" /> */}
+        </section>
+        : null
+      }
+    </main >
   )
 }
 export default Dashboard;
