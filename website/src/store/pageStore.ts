@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import axios from "axios";
-import { NavigateFunction } from "react-router-dom";
+import { Location, NavigateFunction } from "react-router-dom";
 
 type Page = {
     id: string;
@@ -21,7 +21,7 @@ type PageCreateValues = {
 type PageActions = {
     create: (values: PageCreateValues, navigate: NavigateFunction) => void;
     selectCurrentPage: (page: Page) => void;
-    loadAll: (navigate: NavigateFunction) => void;
+    loadAll: (location: Location, navigate: NavigateFunction) => void;
 }
 
 export const usePageStore = create<PageState & PageActions>((set, get) => ({
@@ -39,13 +39,17 @@ export const usePageStore = create<PageState & PageActions>((set, get) => ({
             set({ isLoading: false, status: err.response.data.message });
         });
     },
-    loadAll: (navigate: NavigateFunction) => {
+    loadAll: (location, navigate) => {
         set({ isLoading: true });
         axios.get(`${import.meta.env.VITE_API_URL}/pages/all`, { withCredentials: true }).then(res => {
             const { message, pages }: { message: string, pages: Page[] } = res.data;
             set({ isLoading: false, status: message, pages, currentPage: pages[0] });
             //FIXME: handle it so it doesnt redirect when on like user/profile or somewhere outside dashboard layout
-            if (pages.length > 0) navigate(`/dashboard/${pages[0].id}/incidents`);
+            if (pages.length > 0) {
+                const path = location.pathname;
+                // only redirect on first loaded page if im directly sitting on /dashboard
+                if (path === "/dashboard") navigate(`/dashboard/${pages[0].id}/incidents`);
+            }
         }).catch(err => {
             set({ isLoading: false, status: err.response.data.message });
         })
