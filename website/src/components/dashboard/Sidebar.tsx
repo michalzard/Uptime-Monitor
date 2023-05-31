@@ -30,13 +30,8 @@ function Sidebar({ hide = false, fullWidth = false, closeDrawer }: SidebarProps)
     const app = useAppStore();
     const page = usePageStore();
     const navigate = useNavigate();
-    const location = useLocation();
     const [newPageModalOpen, setNewPageModalOpen] = useState(false);
 
-    useEffect(() => {
-        const path = location.pathname.split("/").filter(l => { if (l !== "dashboard") { return l } else return null })[0];
-        app.selectCustomizationButtonByPath(path);
-    }, [location]);
     if (!auth.isLoading && !auth.isLoggedIn) return <Navigate to="/" />
     return (
         <>
@@ -45,7 +40,10 @@ function Sidebar({ hide = false, fullWidth = false, closeDrawer }: SidebarProps)
                 <Dropdown button={
                     <article className="w-full h-10 flex justify-between items-center px-2 bg-gray-100 hover:bg-blue-200 cursor-pointer rounded-md">
                         <section className="flex">
-                            <img className="rounded-full w-6 h-6" src={auth.user?.avatar_url} referrerPolicy="no-referrer" />
+                            {
+                                auth.user?.avatar_url ? <img className="rounded-full w-6 h-6" src={auth.user?.avatar_url} referrerPolicy="no-referrer" />
+                                    : <UserIcon className="w-6 h-6 text-black " />
+                            }
                             <span className="text-black font-semibold text-md ml-2">{auth.user?.username}</span>
                         </section>
                         <ChevronDownIcon className="w-6 h-6" />

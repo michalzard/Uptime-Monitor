@@ -11,8 +11,12 @@ import PricingPage from "./pages/PricingPage";
 import CommunityPage from "./pages/CommunityPage";
 import DocumentationPage from "./pages/DocumentationPage";
 import HeaderLayout from "./layouts/HeaderLayout";
-import UserProfilePage from "./pages/UserProfilePage";
-import UserBillingPage from "./pages/UserBillingPage";
+import UserProfilePage from "./pages/user/profile/UserProfilePage";
+import UserBillingPage from "./pages/user/UserBillingPage";
+import IncidentsPage from "./pages/dashboard/incidents/IncidentsPage";
+import ComponentsPage from "./pages/dashboard/ComponentsPage";
+import SubscribersPage from "./pages/dashboard/SubscribersPage";
+import IncidentsCreatePage from "./pages/dashboard/incidents/IncidentsCreatePage";
 
 function App() {
   const auth = useAuthStore();
@@ -69,16 +73,19 @@ function App() {
             {/* page related by id */}
             <Route path=":id">
               {/* customization buttons */}
-              <Route path="incidents" element={<section>Incidents Section</section>} />
-              <Route path="components" element={<section>Component Section</section>} />
-              <Route path="subscribers" element={<section>Subscriber email list Section</section>} />
-            </Route>
-            <Route path="pages">
-              <Route path="create" element={<section>Pages create section</section>} />
+              <Route path="incidents" element={<Outlet />}>
+                <Route path="" element={<IncidentsPage />} />
+                <Route path="create" element={<IncidentsCreatePage />} />
+                {/* <Route path="open" element={<></>} /> */}
+                <Route path="incidents" element={<></>} />
+                <Route path="maintenance" element={<></>} />
+              </Route>
+
+              <Route path="components" element={<ComponentsPage />} />
+              <Route path="subscribers" element={<SubscribersPage />} />
             </Route>
           </Route>
         </Route>
-
 
         {/* TODO: setup 404 route */}
       </Routes>
