@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { readCookiesFromHeaders } from "../utils/cookies";
 import { db } from "..";
 import { findSessionByToken, findUserByID } from "../sql/authQuery";
 import { createNewPage, findUserPages } from "../sql/pageQuery";
@@ -7,7 +6,6 @@ import { createId } from "@paralleldrive/cuid2";
 
 
 export async function createPage(req: Request, res: Response) {
-    const cookies = readCookiesFromHeaders(req);
     const { name, isPublic } = req.body;
     try {
         /**
@@ -15,7 +13,7 @@ export async function createPage(req: Request, res: Response) {
         */
         if (!name && !isPublic) return res.status(400).send({ message: "name and isPublic has to be specified" });
 
-        const sessions = await db.query(findSessionByToken, [cookies?.sessionID]);
+        const sessions = await db.query(findSessionByToken, [res.locals.sessionID]);
         const session = sessions.rows[0];
         const { user_pk } = session;
         if (user_pk) {
@@ -39,10 +37,9 @@ export async function createPage(req: Request, res: Response) {
 
 
 export async function getAllPages(req: Request, res: Response) {
-    const cookies = readCookiesFromHeaders(req);
     try {
         // lookup user by session, load all pages with user's id
-        const sessions = await db.query(findSessionByToken, [cookies?.sessionID]);
+        const sessions = await db.query(findSessionByToken, [res.locals.sessionID]);
         const session = sessions.rows[0];
         if (session) {
             const { user_pk } = session;

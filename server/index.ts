@@ -23,6 +23,7 @@ if (process.env.NODE_ENV === "production") {
 
 app.use(cors({ credentials: true, origin: true })); //specify origin if you want to allow only certain domain to communicate with this server
 app.use(express.json());
+// app.use(express.urlencoded({ extended: true }));
 app.get("/", (req, res) => {
     res.status(200).send({ message: "Example Api" });
 })
@@ -30,8 +31,12 @@ app.get("/", (req, res) => {
 // Routes
 import authRoute from "./routes/authRoute";
 import pageRoute from "./routes/pageRoute";
+import uploadRoute from "./routes/uploadRoute";
+
+
 app.use("/auth", authRoute);
 app.use("/pages", pageRoute);
+app.use("/upload", uploadRoute);
 
 server.listen(process.env.PORT, () => { console.log(`Web ${process.env.NODE_ENV === "production" ? "h2" : "h1"} server is running on ${process.env.PORT}`) })
 

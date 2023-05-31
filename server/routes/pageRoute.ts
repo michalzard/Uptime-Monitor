@@ -1,5 +1,6 @@
 import express, { Request, Response } from "express";
 import { createPage, getAllPages } from "../controllers/pageController";
+import { verifySessionCookie } from "../middlewares/cookiesMiddleware";
 const router = express.Router();
 
 /**
@@ -7,8 +8,8 @@ const router = express.Router();
  * GET return public pages / private pages if user is authorized
  * DELETE remove page 
  */
-router.post("/create", createPage);
-router.get("/all", getAllPages);
+router.post("/create", verifySessionCookie, createPage);
+router.get("/all", verifySessionCookie, getAllPages);
 router.get("/:id", /**add getter controller */);
 router.delete("/:id",/**add delete controller  */);
 

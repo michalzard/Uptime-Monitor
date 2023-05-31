@@ -1,6 +1,8 @@
 import express from "express";
 import { userLogin, userLogout, userRegistration, userSession } from "../controllers/authController";
 import { userGithubAccess, userGoogleAccess, userGoogleRequestLink } from "../controllers/oauthController";
+import { verifySessionCookie } from "../middlewares/cookiesMiddleware";
+import { getUserFromSession } from "../middlewares/authMiddleware";
 const router = express.Router();
 
 // POST register
@@ -14,8 +16,8 @@ const router = express.Router();
 
 router.post("/register", userRegistration);
 router.post("/login", userLogin);
-router.get("/session", userSession);
-router.post("/logout", userLogout);
+router.get("/session", verifySessionCookie, getUserFromSession, userSession);
+router.post("/logout", verifySessionCookie, userLogout);
 router.post("/github", userGithubAccess);
 router.get("/google/url", userGoogleRequestLink);
 router.post("/google/access", userGoogleAccess);

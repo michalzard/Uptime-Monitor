@@ -3,7 +3,7 @@ import { createId } from "@paralleldrive/cuid2";
 import * as argon2 from "argon2";
 import { db } from "..";
 import { checkExistingUser, deleteSessionByToken, findSessionByToken, findUserByPrimaryKey, findUserByUsername, registerUser, saveToSession } from "../sql/authQuery";
-import { readCookiesFromHeaders, setHTTPOnlyCookie } from "../utils/cookies";
+import { setHTTPOnlyCookie } from "../utils/cookies";
 
 export async function userRegistration(req: Request, res: Response) {
     const { username, email, password } = req.body;
@@ -54,7 +54,7 @@ export async function userLogin(req: Request, res: Response) {
                     const generatedId = createId();
                     await db.query(saveToSession, [generatedId, pk, "normal"]);
                     setHTTPOnlyCookie(res, "sessionID", generatedId);
-                    res.status(200).send({ message: "User logged in", user });
+                    res.status(200).send({ message: "User logged in", user: { ...user, service: "normal" } });
                 } else {
                     res.status(401).send({ message: "Username or password is incorrect" });
                 }
@@ -72,11 +72,8 @@ export async function userLogin(req: Request, res: Response) {
     }
 }
 export async function userLogout(req: Request, res: Response) {
-    const cookies = readCookiesFromHeaders(req);
-
     try {
-        if (!cookies?.sessionID) return res.status(401).send({ message: "Unauthorized" });
-        db.query(deleteSessionByToken, [cookies?.sessionID]).then(dbres => {
+        db.query(deleteSessionByToken, [res.locals.sessionID]).then(dbres => {
             res.clearCookie("sessionID");
             res.status(200).send({ message: "Logged out" });
         }).catch(err => {
@@ -93,22 +90,24 @@ export async function userLogout(req: Request, res: Response) {
 
 // FIXME:have session token be uuid and have it refreshed on expiry
 export async function userSession(req: Request, res: Response) {
-    const cookies = readCookiesFromHeaders(req);
     try {
-        if (!cookies?.sessionID) { return res.status(401).send({ message: "Unauthorized" }); }
-        const sessions = await db.query(findSessionByToken, [cookies?.sessionID]);
-        const session = sessions.rows[0];
-        if (session) {
-            const userPK = session.user_pk;
-            const sessionUserByPK = await db.query(findUserByPrimaryKey, [userPK]);
-            const foundUser = sessionUserByPK.rows[0];
-            const { username, email, avatar_url } = foundUser;
-
-            res.status(200).send({ message: "Authorized", user: { username, email, avatar_url, service: session.service } });
+        if (res.locals.user) {
+            const { username, email, avatar_url, service } = res.locals.user;
+            res.status(200).send({ message: "Authorized", user: { username, email, avatar_url, service: service } });
         } else {
             res.clearCookie("sessionID");
             res.status(404).send({ message: "Unauthorized" });
         }
+    } catch (err) {
+        // handle error
+        console.log(err);
+        res.status(500).send({ message: "Internal Server Error" });
+    }
+}
+// TODO: update personal user info
+export async function userInfoUpdate(req: Request, res: Response) {
+    try {
+        // TODO:
     } catch (err) {
         // handle error
         console.log(err);
