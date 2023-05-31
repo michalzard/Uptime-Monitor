@@ -4,9 +4,11 @@ import { Dropdown, DropdownItem } from "../../customUI/Dropdown";
 import { useState } from "react";
 import NewPageModal from "./NewPageModal";
 import { useNavigate } from "react-router-dom";
+import { useAppStore } from "../../../store/appStore";
 
 function PageDropdown({ closeDrawer }: { closeDrawer?: () => void }) {
     const page = usePageStore();
+    const app = useAppStore();
     const [openNewPageModal, setOpenNewPageModal] = useState(false);
     const navigate = useNavigate();
     return (
@@ -22,6 +24,7 @@ function PageDropdown({ closeDrawer }: { closeDrawer?: () => void }) {
                 {
                     page.pages.map(p => <DropdownItem key={p.id} callback={() => {
                         navigate(`/dashboard/${p.id}/incidents`); page.selectCurrentPage(p);
+                        app.selectCustomizationButton(0);
                         if (closeDrawer) closeDrawer();
                     }}>
                         {p.name}
