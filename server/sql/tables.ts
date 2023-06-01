@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS "user"(
 const createSessionTable: string = `
 CREATE TABLE IF NOT EXISTS "session"(
     user_pk INT REFERENCES "user"(pk),
-    token VARCHAR(24) NOT NULL,
+    token VARCHAR(24) NOT NULL UNIQUE,
     service VARCHAR(100)
 );
 `;
@@ -19,10 +19,17 @@ CREATE TABLE IF NOT EXISTS "session"(
 const createPageTable: string = ` 
 CREATE TABLE IF NOT EXISTS page(
     user_pk INT REFERENCES "user"(pk),
-    id VARCHAR(50),
+    id VARCHAR(24) NOT NULL UNIQUE,
     name VARCHAR(255),
     ispublic BOOLEAN NOT NULL DEFAULT FALSE
 );
 `
+const createAwsImageTable: string = `
+CREATE TABLE IF NOT EXISTS aws_img(
+    user_pk INT REFERENCES "user"(pk),
+    name VARCHAR(255) NOT NULL UNIQUE
+)
+`
 
-export const createTables = createUserTable.concat(createSessionTable, createPageTable);
+
+export const createTables = createUserTable.concat(createSessionTable, createPageTable, createAwsImageTable);

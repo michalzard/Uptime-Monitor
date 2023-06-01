@@ -18,7 +18,7 @@ function ThirdPartyProfile({ service }: ThirdPartyProfileProps) {
           Github Security Settings</a>
       </>;
       case "google": return <>
-        <span className="text-lg text-center mb-4">In order to change your<b className="mx-1 inline-block text-transparent">Google</b>credentials you need to visit
+        <span className="text-lg text-center mb-4">In order to change your<b className="mx-1 inline-block text-orange-400">Google</b>credentials you need to visit
           <u className="mx-1">Google's personal information settings</u></span>
         <a href="https://myaccount.google.com/personal-info" className="flex items-center justify-center  bg-orange-400 text-white text-lg font-semibold px-3.5 py-2 rounded-md">
           {/*TODO: this svg is all f**** up,maybe later replace it with another one */}

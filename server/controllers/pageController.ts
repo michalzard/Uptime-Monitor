@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { db } from "..";
-import { findSessionByToken, findUserByID } from "../sql/authQuery";
+import { findSessionByToken } from "../sql/authQuery";
 import { createNewPage, findUserPages } from "../sql/pageQuery";
 import { createId } from "@paralleldrive/cuid2";
 

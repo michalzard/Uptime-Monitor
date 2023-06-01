@@ -1,7 +1,5 @@
-import { PlusIcon } from "@heroicons/react/24/solid";
 import { useAuthStore } from "../../../store/authStore";
-import { useCallback, useEffect, useState } from "react";
-import { LoadingSpinner } from "../../../Icons";
+import { useEffect, useState } from "react";
 import UserProfile from "./UserProfile";
 import ThirdPartyProfile from "./ThirdPartyProfile";
 

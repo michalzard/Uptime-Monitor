@@ -6,8 +6,8 @@ import { ReactNode, useEffect, useState } from "react";
 import { Dropdown, DropdownItem } from "../customUI/Dropdown";
 import { usePageStore } from "../../store/pageStore";
 import PageDropdown from "./Page/PageDropdown";
-import { LoadingSpinner } from "../../Icons";
 import NewPageModal from "./Page/NewPageModal";
+import { LoadingSpinner } from "../../Icons";
 
 type SidebarButtonProps = {
     text: string;
@@ -57,7 +57,7 @@ function Sidebar({ hide = false, fullWidth = false, closeDrawer }: SidebarProps)
                 <p className="text-gray-400  text-sm py-2">Pages</p>
                 <article className="w-full h-10">
                     {
-                        page.isLoading ? <LoadingSpinner className="w-2 h-2 overflow-visible text-blue-600" /> :
+                        page.isLoading ? <LoadingSpinner className="w-8 h-8 text-blue-500" /> :
                             page.pages.length > 0 ? <PageDropdown closeDrawer={closeDrawer} /> :
                                 <NewPageModal isOpen={newPageModalOpen} open={() => setNewPageModalOpen(true)} close={() => setNewPageModalOpen(false)} />
                     }

@@ -30,7 +30,7 @@ function SignUp() {
 
     if (!auth.isLoading && auth.isLoggedIn) return <Navigate to="/" />
     return (
-        <main className="w-screen h-screen flex flex-col justify-center items-center px-4 bg-slate-50">
+        <main className="w-screen h-screen flex flex-col justify-center items-center px-4 lg:px-0 bg-slate-50">
             <form onSubmit={handleSubmit} className="rounded-md flex flex-col items-center w-96 py-10 pt-6 shadow-xl bg-white border">
                 <p className="font-semibold text-3xl mb-3">
                     Sign up for <span className="text-blue-700 text-3xl font-bold tracking-widest">SENTINEL</span>
@@ -67,7 +67,7 @@ function SignUp() {
                     {/* sign in */}
                     <button type="submit" className={`bg-blue-700 text-white rounded-md py-2 font-semibold tracking-wide 
                     flex items-center justify-center`} disabled={isSubmitting}>
-                        Sign up {isSubmitting ? <LoadingSpinner className="ml-2 h-1.5 overflow-visible text-blue-400 -translate-y-2.5" /> : null}
+                        Sign up {isSubmitting ? <LoadingSpinner className="ml-2 h-5 text-blue-500" /> : null}
                     </button>
                     <p onClick={() => navigate("/signin")} className="text-blue-600 mt-2 cursor-pointer">Already have an account? Sign in</p>
                     <p onClick={() => navigate("/forgot-password")} className="text-blue-600 cursor-pointer">Forgot your password?</p>

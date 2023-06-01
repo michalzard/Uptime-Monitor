@@ -16,8 +16,12 @@ const router = express.Router();
 
 router.post("/register", userRegistration);
 router.post("/login", userLogin);
-router.get("/session", verifySessionCookie, getUserFromSession, userSession);
 router.post("/logout", verifySessionCookie, userLogout);
+router.get("/session", verifySessionCookie, getUserFromSession, userSession);
+//TODO: router.post("/pw-forgot",)
+//TODO: router.post("/pw-reset",)
+//TODO: router.delete("/deactivation",)
+// oAuth
 router.post("/github", userGithubAccess);
 router.get("/google/url", userGoogleRequestLink);
 router.post("/google/access", userGoogleAccess);

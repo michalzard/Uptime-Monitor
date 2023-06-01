@@ -48,10 +48,10 @@ export const usePageStore = create<PageState & PageActions>((set, get) => ({
             if (pages.length > 0) {
                 const path = location.pathname;
                 // only redirect on first loaded page if im directly sitting on /dashboard
-                if (path === "/dashboard") navigate(`/dashboard/${pages[0].id}/incidents`);
+                if (!path.includes("/user")) navigate(`/dashboard/${pages[0].id}/incidents`);
             }
         }).catch(err => {
-            set({ isLoading: false, status: err.response.data.message });
+            set({ isLoading: false, status: err.message });
         })
     },
     selectCurrentPage(page: Page) {

@@ -2,8 +2,9 @@ import { Request, Response, NextFunction } from "express";
 import { createId } from "@paralleldrive/cuid2";
 import * as argon2 from "argon2";
 import { db } from "..";
-import { checkExistingUser, deleteSessionByToken, findSessionByToken, findUserByPrimaryKey, findUserByUsername, registerUser, saveToSession } from "../sql/authQuery";
+import { checkExistingUser, deleteSessionByToken, findUserByUsername, registerUser, saveToSession } from "../sql/authQuery";
 import { setHTTPOnlyCookie } from "../utils/cookies";
+import { client } from "./uploadController";
 
 export async function userRegistration(req: Request, res: Response) {
     const { username, email, password } = req.body;
@@ -28,8 +29,8 @@ export async function userRegistration(req: Request, res: Response) {
         }
     } catch (err) {
         // handle error
-        console.log(err);
         if (err instanceof Error) {
+            console.log(err);
             if (err.message.includes("duplicate")) {
                 res.status(400).send({ message: "Username or email is already in use." });
             } else {
@@ -52,7 +53,7 @@ export async function userLogin(req: Request, res: Response) {
                 if (isValidPassword) {
                     const { pk, password, ...user } = foundUser; //loaded from db
                     const generatedId = createId();
-                    await db.query(saveToSession, [generatedId, pk, "normal"]);
+                    db.query(saveToSession, [generatedId, pk, "normal"]);
                     setHTTPOnlyCookie(res, "sessionID", generatedId);
                     res.status(200).send({ message: "User logged in", user: { ...user, service: "normal" } });
                 } else {
