@@ -6,5 +6,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 3000,
+  },
+  build:{
+    rollupOptions:{
+      experimentalCacheExpiry: 60000, //cache expiry set to 1 min
+    }
   }
 })
