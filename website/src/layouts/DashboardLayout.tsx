@@ -7,12 +7,11 @@ function Dashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const page = usePageStore();
-
   const [drawerOpen, setDrawerOpen] = useState(false);
-
-
   // load pages
-  useEffect(() => page.loadAll(location, navigate), []);
+  useEffect(() => {
+    page.loadAll(navigate, true);
+  }, []);
 
   return (
     <main className="flex w-full h-[calc(100vh-64px)]">

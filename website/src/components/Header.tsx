@@ -34,7 +34,7 @@ function Header() {
                     {
                         auth.isLoggedIn ?
                             // using selected 10 so its higher number than amount of buttons in order for transition to go to right side
-                            <DropdownItem callback={() => { app.selectHeaderIndex(10); page.loadAll(location, navigate); }} className="rounded-2xl bg-blue-700 text-white font-semibold px-4 py-1">
+                            <DropdownItem callback={() => { app.selectHeaderIndex(10); navigate("/dashboard"); page.loadAll(navigate); }} className="rounded-2xl bg-blue-700 text-white font-semibold px-4 py-1">
                                 Dashboard
                             </DropdownItem>
                             :
@@ -74,7 +74,7 @@ function Header() {
                 {
                     auth.isLoggedIn ?
                         // using selected 10 so its higher number than amount of buttons in order for transition to go to right side
-                        <button onClick={() => { app.selectHeaderIndex(10); page.loadAll(location, navigate); }} className="rounded-2xl bg-blue-700 text-white font-semibold px-4 py-1">Dashboard</button>
+                        <button onClick={() => { app.selectHeaderIndex(10); navigate("/dashboard"); page.loadAll(navigate); }} className="rounded-2xl bg-blue-700 text-white font-semibold px-4 py-1">Dashboard</button>
                         :
                         <>
                             <button onClick={() => { app.selectHeaderIndex(10); navigate("/signup") }} className="mr-2 rounded-2xl bg-blue-700 text-white font-semibold px-4 py-1">Start for free</button>
