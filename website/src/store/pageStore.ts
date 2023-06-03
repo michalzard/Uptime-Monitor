@@ -21,7 +21,7 @@ type PageCreateValues = {
 type PageActions = {
     create: (values: PageCreateValues, navigate: NavigateFunction) => void;
     selectCurrentPage: (page: Page) => void;
-    loadAll: (location: Location, navigate: NavigateFunction) => void;
+    loadAll: (navigate: NavigateFunction, disabled?: boolean) => void;
 }
 
 export const usePageStore = create<PageState & PageActions>((set, get) => ({
@@ -39,16 +39,16 @@ export const usePageStore = create<PageState & PageActions>((set, get) => ({
             set({ isLoading: false, status: err.response.data.message });
         });
     },
-    loadAll: (location, navigate) => {
+    loadAll: (navigate, disable) => {
         set({ isLoading: true });
         axios.get(`${import.meta.env.VITE_API_URL}/pages/all`, { withCredentials: true }).then(res => {
             const { message, pages }: { message: string, pages: Page[] } = res.data;
             set({ isLoading: false, status: message, pages, currentPage: pages[0] });
             //FIXME: handle it so it doesnt redirect when on like user/profile or somewhere outside dashboard layout
             if (pages.length > 0) {
-                const path = location.pathname;
+
                 // only redirect on first loaded page if im directly sitting on /dashboard
-                if (!path.includes("/user")) navigate(`/dashboard/${pages[0].id}/incidents`);
+                if (!disable) navigate(`/dashboard/${pages[0].id}/incidents`);
             }
         }).catch(err => {
             set({ isLoading: false, status: err.message });
