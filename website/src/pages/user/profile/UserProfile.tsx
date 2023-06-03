@@ -96,8 +96,6 @@ function UserProfile() {
         }
     });
 
-    console.log(passwordForm.values);
-
     if (!isLoading && !isLoggedIn) return <Navigate to="/signin" />
     return (
         <>
