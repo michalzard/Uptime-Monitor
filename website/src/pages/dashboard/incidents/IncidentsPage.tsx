@@ -22,7 +22,7 @@ function IncidentsPage() {
         </nav>
       </section>
       <section className="flex flex-col my-2">
-        <img src={"/dashboard/incidents/no_incidents.png"} className="h-96" alt="No Incidents" />
+        <img src={"/dashboard/incidents/no_incidents.png"} className="h-96 aspect-square" alt="No Incidents" />
         <span className="text-xl font-semibold text-center my-3">No Open Incidents</span>
         <span className="text-sm text-center my-2">New incidents and scheduled maintanance events will appear here.</span>
       </section>
