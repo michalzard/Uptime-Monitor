@@ -5,7 +5,7 @@ import { createId } from "@paralleldrive/cuid2";
 import sharp from "sharp";
 import { db } from "..";
 import { updateUserAvatarURLByPK } from "../sql/authQuery";
-import { saveAwsImageByPK } from "../sql/awsQuery";
+import { createAwsImageRef, updateExistingAwsImageRef } from "../sql/awsQuery";
 
 export const client = new S3Client({
     region: process.env.AWS_BUCKET_REGION,
@@ -32,12 +32,14 @@ export async function handlePfpUpload(req: Request, res: Response) {
                     Key: fileName,
                 });
                 client.send(uploadImageCmd).then(async data => {
-                    const url = await getSignedUrl(client, getUploadedImageCmd, { expiresIn: 3600 });
+                    const url = await getSignedUrl(client, getUploadedImageCmd, { expiresIn: 7200 });
                     if (url) {
                         db.query(updateUserAvatarURLByPK, [res.locals.user.pk, url]); //save url to db
                         // save reference for said image for future
-                        const formattedFN = fileName.substring(0, 250).trim();//max length is 255 so just in case
-                        db.query(saveAwsImageByPK, [res.locals.user.pk, formattedFN]);
+                        db.query(updateExistingAwsImageRef, [res.locals.user.pk, fileName]).then(data => {
+                            // if there wasnt column insert new one
+                            if (data.rowCount === 0) db.query(createAwsImageRef, [res.locals.user.pk, fileName]);
+                        });
                         res.status(200).send({ message: "Profile picture was uploaded", url });
                     } else {
                         res.status(404).send({ message: "There was error with pfp uploading" });
