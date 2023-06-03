@@ -1,4 +1,4 @@
-import { MouseEventHandler, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 import { useAuthStore } from "../../../store/authStore";
 import { PlusIcon, UserIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
@@ -11,7 +11,7 @@ function UserProfile() {
     const labelClass = `text-gray-700 font-semibold text-lg my-1`;
     const smallerLabelClass = `text-gray-700 font-semibold text-sm my-1.5`;
     const [pfpHovered, setPfpHovered] = useState(false);
-    const { user, isLoading, isLoggedIn } = useAuthStore();
+    const { user, isLoading, isLoggedIn, updateAvatar } = useAuthStore();
 
 
     /**
@@ -22,7 +22,9 @@ function UserProfile() {
     // file preview
     const [preview, setPreview] = useState("");
     const [fileData, setFileData] = useState({});
+    const [fileUploading, setFileUploading] = useState(false);
     const filePickerRef = useRef<HTMLInputElement>(null);
+
     const selectPfp = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (e.target.files) {
             const file = e.target.files[0];
@@ -33,24 +35,33 @@ function UserProfile() {
             setFileData(formData);
             setPreview(previewURL);
             setPfpHovered(false);
-        } else return;
-
+        }
     }
+
     const imgOnClick = useCallback(() => {
         if (filePickerRef.current) filePickerRef.current.click();
     }, [filePickerRef]);
+
     const imgUpload = () => {
-        axios.post(`${import.meta.env.VITE_API_URL}/upload`, fileData, { withCredentials: true });
-        setPreview("");
+        setFileUploading(true);
+        axios.post(`${import.meta.env.VITE_API_URL}/upload`, fileData, { withCredentials: true }).then(res => {
+            const { url } = res.data;
+            if (url) { setPreview(""); updateAvatar(url); }
+            setFileUploading(false);
+        });
         setPfpHovered(false);
         setFileData({});
+    }
+    const cancelUpload = () => {
+        setFileData({});
+        setPreview("");
+        setPfpHovered(false);
     }
     if (!isLoading && !isLoggedIn) return <Navigate to="/signin" />
     return (
         <>
             <section className="w-full lg:w-96 my-2">
                 <label className={labelClass}>General Info</label>
-
                 {
                     isLoading ? <LoadingSpinner className="w-8 h-8 text-blue-500" />
                         :
@@ -65,12 +76,15 @@ function UserProfile() {
                                 style={{ filter: pfpHovered ? "grayscale(100%)" : "none" }}
                             >
                                 <div
-                                    className="bg-blue-700 rounded-full w-full h-full flex items-center justify-center"
+                                    className="rounded-full w-full h-full flex items-center justify-center"
                                     style={{ filter: pfpHovered ? "blur(1px)" : "none" }}
                                 >
-
-                                    {user?.avatar_url || preview ? <img src={preview ? preview : user?.avatar_url} className="w-12 h-12 rounded-full cursor-pointer"
-                                        onMouseEnter={() => setPfpHovered(true)} onMouseLeave={() => setPfpHovered(false)} />
+                                    {user?.avatar_url || preview ?
+                                        fileUploading ? <LoadingSpinner className="w-10 h-10 text-blue-500" /> :
+                                            <img src={preview ? preview : user?.avatar_url}
+                                                onMouseEnter={() => setPfpHovered(true)}
+                                                onMouseLeave={() => setPfpHovered(false)}
+                                                className="w-12 h-12 rounded-full cursor-pointer" />
                                         :
                                         <UserIcon className="w-8 h-8 text-white z-10" />
                                     }
@@ -81,28 +95,24 @@ function UserProfile() {
                                     <PlusIcon className="w-10 h-10 text-white" />
                                 </div>
                             </div>
-                            {/* check with user if they want to save it */}
                             {
                                 preview ?
                                     <>
                                         <button className="ml-3 text-blue-700 font-semibold"
                                             onClick={imgUpload}>Save?</button>
-                                        <button className="ml-3 text-red-700 font-semibold" onClick={() => { setFileData({}); setPreview(""); setPfpHovered(false); }}>Delete?</button>
+                                        <button className="ml-3 text-red-700 font-semibold" onClick={cancelUpload}>Delete?</button>
                                     </>
                                     : null
                             }
                         </section>
                 }
-
                 <div className="flex flex-col my-2">
                     <label className={smallerLabelClass}>Username</label>
                     <input type="text" defaultValue={user?.username} className={inputClass} />
                     <label className={smallerLabelClass}>Email</label>
                     <input type="text" defaultValue={user?.email} className={inputClass} />
                 </div>
-
                 <button type="submit" className={buttonClass}>Save changes</button>
-
             </section>
 
             <section className="w-full lg:w-96 flex flex-col">
