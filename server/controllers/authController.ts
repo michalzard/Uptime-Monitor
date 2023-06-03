@@ -4,7 +4,6 @@ import * as argon2 from "argon2";
 import { db } from "..";
 import { checkExistingUser, deleteSessionByToken, findUserByUsername, registerUser, saveToSession } from "../sql/authQuery";
 import { setHTTPOnlyCookie } from "../utils/cookies";
-import { client } from "./uploadController";
 
 export async function userRegistration(req: Request, res: Response) {
     const { username, email, password } = req.body;
@@ -24,7 +23,7 @@ export async function userRegistration(req: Request, res: Response) {
                 await db.query(saveToSession, [sessionID, pk, "normal"]);
                 // create session object with user id,current timestamp,generated Token that will be passed trough authorization header for client to save 
                 setHTTPOnlyCookie(res, "sessionID", sessionID);
-                res.status(200).send({ message: "User Registered", user: filteredUser });
+                res.status(200).send({ message: "User Registered", user: { ...filteredUser, service: "normal" } });
             }
         }
     } catch (err) {
@@ -89,7 +88,6 @@ export async function userLogout(req: Request, res: Response) {
     }
 }
 
-// FIXME:have session token be uuid and have it refreshed on expiry
 export async function userSession(req: Request, res: Response) {
     try {
         if (res.locals.user) {
