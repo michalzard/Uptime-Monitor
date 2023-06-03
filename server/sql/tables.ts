@@ -28,7 +28,7 @@ const createAwsImageTable: string = `
 CREATE TABLE IF NOT EXISTS aws_img(
     user_pk INT REFERENCES "user"(pk),
     name VARCHAR(255) NOT NULL UNIQUE
-)
+);
 `
 
 
