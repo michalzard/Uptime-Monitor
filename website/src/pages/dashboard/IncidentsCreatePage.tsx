@@ -1,18 +1,19 @@
 import { InformationCircleIcon } from "@heroicons/react/24/solid";
-import Stepper from "../../../components/customUI/Stepper";
-import { usePageStore } from "../../../store/pageStore";
+import Stepper from "../../components/customUI/Stepper";
+import { usePageStore } from "../../store/pageStore";
 
 function IncidentsCreatePage() {
     const { currentPage } = usePageStore();
-    const inputClass = `focus:outline-blue-500 disabled:text-gray-400 border-gray-300 bg-gray-50 placeholder:text-gray-700 px-3 py-1.5 rounded-sm ring-1 ring-black/10`;
-    const smallLabelclass = `text-left text-gray-400 text-xs my-2`;
+    const inputClass = `focus:outline-blue-500 disabled:text-gray-400 border-gray-300 bg-gray-50 placeholder:text-gray-500 px-3 py-1.5 rounded-sm ring-1 ring-black/10`;
+    const smallLabelclass = `text-left text-gray-400 text-xs my-2 font-semibold`;
     // TODO: actually handle form inputs
     return (
         <article className="w-full lg:w-[calc(100vw-300px)] h-full flex flex-col items-center justify-center">
             <section className="flex flex-col w-full lg:w-1/2 px-4">
                 <span className="text-left text-black text-2xl font-semibold mb-2">Create Incident</span>
-                <input className={inputClass} placeholder="Incident Name"></input>
-                <label className={smallLabelclass}>This incident will be posted to {currentPage?.name}</label>
+                <label className={smallLabelclass}>Incident name</label>
+                <input className={inputClass} placeholder="Incident name" />
+                <label className={"text-left text-gray-400 text-xs my-2"}>This incident will be posted to {currentPage?.name}</label>
                 <div className="flex items-center">
                     {/* TODO: change styling on checkbox */}
                     <input type="checkbox" />

@@ -87,3 +87,15 @@ export async function getAllPages(req: Request, res: Response) {
 //         res.status(500).send({ message: "Internal Server Error" });
 //     }
 // }
+
+
+export async function addComponent(req: Request, res: Response) {
+    const { name, description, startDate } = req.body;
+    try {
+        
+    } catch (err) {
+        // handle error
+        console.log(err);
+        res.status(500).send({ message: "Internal Server Error" });
+    }
+}

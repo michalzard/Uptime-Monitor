@@ -12,8 +12,8 @@ function IncidentsPage() {
     return `${activeTab === tabIndex ? "border-b-2 border-blue-700" : ""}`;
   }
   return (
-    <article className="w-full lg:w-[calc(100vw-300px)] h-full flex flex-col items-center justify-center p-2">
-      <section className="flex flex-col w-full lg:w-1/2  pt-20 lg:pt-0">
+    <article className="w-full lg:w-[calc(100vw-300px)] h-full flex flex-col items-center lg:justify-center px-2">
+      <section className="flex flex-col w-full lg:w-1/2">
         <span className="text-center lg:text-left text-3xl font-semibold my-5">Incidents</span>
         <nav className="[&>span]:p-2.5 [&>span]:cursor-pointer py-2 text-gray-700 font-semibold border-b-2">
           <span className={isTabActive(1)} onClick={() => { setActiveTab(1) }}>Open</span>
@@ -21,9 +21,9 @@ function IncidentsPage() {
           <span className={isTabActive(3)} onClick={() => { setActiveTab(3); navigate("maintenance") }}>Maintenances</span>
         </nav>
       </section>
-      <section className="flex flex-col my-2">
-        <img src={"/dashboard/incidents/no_incidents.png"} className="h-96 aspect-square" alt="No Incidents" />
-        <span className="text-xl font-semibold text-center my-3">No Open Incidents</span>
+      <section className="flex flex-col">
+        <img src={"/dashboard/incidents/no_incidents.png"} className="h-80 lg:h-96 w-96" alt="No Incidents" />
+        <span className="text-xl font-semibold text-center mb-2">No Open Incidents</span>
         <span className="text-sm text-center my-2">New incidents and scheduled maintanance events will appear here.</span>
       </section>
       <button onClick={() => navigate("create")} className="bg-blue-700 px-4 py-1.5 rounded-md font-semibold text-white my-3">Create Incident</button>

@@ -1,5 +1,4 @@
-import Header from "./components/Header"
-import { BrowserRouter as Router, Routes, Route, Outlet, useSearchParams, useParams, useNavigate, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Outlet } from "react-router-dom";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
 // TODO:lazy load this
@@ -13,10 +12,11 @@ import DocumentationPage from "./pages/DocumentationPage";
 import HeaderLayout from "./layouts/HeaderLayout";
 import UserProfilePage from "./pages/user/profile/UserProfilePage";
 import UserBillingPage from "./pages/user/UserBillingPage";
-import IncidentsPage from "./pages/dashboard/incidents/IncidentsPage";
+import IncidentsPage from "./pages/dashboard/IncidentsPage";
 import ComponentsPage from "./pages/dashboard/ComponentsPage";
 import SubscribersPage from "./pages/dashboard/SubscribersPage";
-import IncidentsCreatePage from "./pages/dashboard/incidents/IncidentsCreatePage";
+import IncidentsCreatePage from "./pages/dashboard/IncidentsCreatePage";
+import AddComponentPage from "./pages/dashboard/AddComponentPage";
 
 function App() {
   const auth = useAuthStore();
@@ -76,12 +76,18 @@ function App() {
               <Route path="incidents" element={<Outlet />}>
                 <Route path="" element={<IncidentsPage />} />
                 <Route path="create" element={<IncidentsCreatePage />} />
-                {/* <Route path="open" element={<></>} /> */}
-                <Route path="incidents" element={<></>} />
+                <Route path="incidents" element={<Outlet />}>
+
+                </Route>
+
                 <Route path="maintenance" element={<></>} />
               </Route>
 
-              <Route path="components" element={<ComponentsPage />} />
+              <Route path="components" element={<Outlet />}>
+                <Route path="" element={<ComponentsPage />} />
+                <Route path="new" element={<AddComponentPage />} />
+                
+              </Route>
               <Route path="subscribers" element={<SubscribersPage />} />
             </Route>
           </Route>

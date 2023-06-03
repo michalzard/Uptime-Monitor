@@ -18,10 +18,18 @@ type PageCreateValues = {
     name: string;
     isPublic: boolean;
 }
+
+type PageComponent = {
+    name: string;
+    description: string;
+    startDate: Date;
+}
+
 type PageActions = {
     create: (values: PageCreateValues, navigate: NavigateFunction) => void;
     selectCurrentPage: (page: Page) => void;
     loadAll: (navigate: NavigateFunction, disabled?: boolean) => void;
+    addComponent: ({ name, description, startDate }: PageComponent) => void;
 }
 
 export const usePageStore = create<PageState & PageActions>((set, get) => ({
@@ -44,10 +52,7 @@ export const usePageStore = create<PageState & PageActions>((set, get) => ({
         axios.get(`${import.meta.env.VITE_API_URL}/pages/all`, { withCredentials: true }).then(res => {
             const { message, pages }: { message: string, pages: Page[] } = res.data;
             set({ isLoading: false, status: message, pages, currentPage: pages[0] });
-            //FIXME: handle it so it doesnt redirect when on like user/profile or somewhere outside dashboard layout
             if (pages.length > 0) {
-
-                // only redirect on first loaded page if im directly sitting on /dashboard
                 if (!disable) navigate(`/dashboard/${pages[0].id}/incidents`);
             }
         }).catch(err => {
@@ -56,5 +61,8 @@ export const usePageStore = create<PageState & PageActions>((set, get) => ({
     },
     selectCurrentPage(page: Page) {
         set({ currentPage: page });
+    },
+    addComponent({ name, description, startDate }) {
+        // send it to the good old backend and have it attached to current page
     },
 }));
