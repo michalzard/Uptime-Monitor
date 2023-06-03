@@ -24,6 +24,8 @@ type UserActions = {
     githubAuth: (code: string) => void;
     googleRedirect: () => void;
     googleAuth: (code: string) => void;
+    // update
+    updateAvatar: (url: string) => void;
 }
 
 export type RegisterValues = {
@@ -127,6 +129,15 @@ export const useAuthStore = create<UserState & UserActions>((set, get) => ({
             set({ isLoading: false, isLoggedIn: false, status: err.response.data.message });
         })
     },
-
+    updateAvatar: (url: string) => {
+        if (url) {
+            set((state) => ({
+                user: state.user ? {
+                    ...state.user,
+                    avatar_url: url,
+                } : null
+            }));
+        }
+    },
 }));
 
