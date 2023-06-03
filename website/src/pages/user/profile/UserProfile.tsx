@@ -4,21 +4,19 @@ import { PlusIcon, UserIcon } from "@heroicons/react/24/solid";
 import axios from "axios";
 import { LoadingSpinner } from "../../../Icons";
 import { Navigate } from "react-router-dom";
+import { useFormik } from "formik";
+import * as yup from "yup";
 
 function UserProfile() {
     const inputClass = `focus:outline-blue-500 disabled:text-gray-400 border-gray-300 mb-1.5 bg-gray-50 placeholder:text-gray-700 px-3 py-1.5 rounded-sm ring-1 ring-black/10`;
-    const buttonClass = `bg-blue-600 px-3 py-1.5 rounded-md text-white font-semibold disabled:bg-gray-400 disabled:text-gray-200 w-full`;
+    const buttonClass = `bg-blue-600 px-3 py-1.5 rounded-md text-white font-semibold disabled:bg-gray-400 disabled:text-gray-200 w-full flex items-center justify-center`;
     const labelClass = `text-gray-700 font-semibold text-lg my-1`;
     const smallerLabelClass = `text-gray-700 font-semibold text-sm my-1.5`;
+    const errorClass = `text-red-600 text-sm`;
+
     const [pfpHovered, setPfpHovered] = useState(false);
     const { user, isLoading, isLoggedIn, updateAvatar } = useAuthStore();
 
-
-    /**
-     * add functionality to save profile picture,preview prof before upload
-     * add func to update username and email
-     * add same func for just pasword itself
-     */
     // file preview
     const [preview, setPreview] = useState("");
     const [fileData, setFileData] = useState({});
@@ -57,6 +55,49 @@ function UserProfile() {
         setPreview("");
         setPfpHovered(false);
     }
+
+
+
+    const infoValidationSchema = yup.object({
+        username: yup.string().min(5).max(100).required(),
+        email: yup.string().email("Email is invalid").required(),
+    });
+
+    const infoForm = useFormik({
+        initialValues: {
+            username: user?.username,
+            email: user?.email,
+        },
+        validationSchema: infoValidationSchema,
+        onSubmit: (values, form) => {
+            axios.post(`${import.meta.env.VITE_API_URL}/auth/update`, { ...values }, { withCredentials: true }).then(res => {
+                // const { message } = res.data;
+                form.setSubmitting(false);
+            }).catch(console.error);
+        }
+    });
+    // password
+    const passwordValidationSchema = yup.object({
+        password: yup.string().min(5).required(),
+        verifyPassword: yup.string().min(5).oneOf([yup.ref("password")], "This must match password").required("password verification is required"),
+    });
+
+    const passwordForm = useFormik({
+        initialValues: {
+            password: "",
+            verifyPassword: "",
+        },
+        validationSchema: passwordValidationSchema,
+        onSubmit: (values, form) => {
+            axios.post(`${import.meta.env.VITE_API_URL}/auth/update-password`, { password: values.password }, { withCredentials: true }).then(res => {
+                // const { message } = res.data;
+                form.setSubmitting(false);
+            }).catch(console.error);
+        }
+    });
+
+    console.log(passwordForm.values);
+
     if (!isLoading && !isLoggedIn) return <Navigate to="/signin" />
     return (
         <>
@@ -76,7 +117,7 @@ function UserProfile() {
                                 style={{ filter: pfpHovered ? "grayscale(100%)" : "none" }}
                             >
                                 <div
-                                    className="rounded-full w-full h-full flex items-center justify-center"
+                                    className="bg-blue-700 rounded-full w-full h-full flex items-center justify-center"
                                     style={{ filter: pfpHovered ? "blur(1px)" : "none" }}
                                 >
                                     {user?.avatar_url || preview ?
@@ -106,25 +147,37 @@ function UserProfile() {
                             }
                         </section>
                 }
+                <form onSubmit={infoForm.handleSubmit}>
+                    <div className="flex flex-col my-2">
+                        {/* username */}
+                        <label className={smallerLabelClass}>Username</label>
+                        <input type="text" id="username" className={inputClass} value={infoForm.values.username} onChange={infoForm.handleChange} onBlur={infoForm.handleBlur} />
+                        <span className={errorClass}>{infoForm.errors.username}</span>
+                        {/* email */}
+                        <label className={smallerLabelClass}>Email</label>
+                        <input type="text" id="email" className={inputClass} value={infoForm.values.email} onChange={infoForm.handleChange} onBlur={infoForm.handleBlur} />
+                        <span className={errorClass}>{infoForm.errors.email}</span>
+
+                    </div>
+                    <button type="submit" className={buttonClass} disabled={infoForm.isSubmitting}>Save changes {infoForm.isSubmitting ?
+                        <LoadingSpinner className="ml-1 h-5 text-white" /> : null}</button>
+                </form>
+            </section>
+
+            <form onSubmit={passwordForm.handleSubmit} className="w-full lg:w-96 flex flex-col">
                 <div className="flex flex-col my-2">
-                    <label className={smallerLabelClass}>Username</label>
-                    <input type="text" defaultValue={user?.username} className={inputClass} />
-                    <label className={smallerLabelClass}>Email</label>
-                    <input type="text" defaultValue={user?.email} className={inputClass} />
+                    <label className={labelClass}>Password</label>
+                    <label className={smallerLabelClass}>New Password</label>
+
+                    <input type="password" id="password" className={inputClass} value={passwordForm.values.password} onBlur={passwordForm.handleBlur} onChange={passwordForm.handleChange} />
+                    <span className={errorClass}>{passwordForm.touched.password ? passwordForm.errors.password : ""}</span>
+                    <label className={smallerLabelClass}>Verify Password</label>
+                    <input type="password" id="verifyPassword" className={inputClass} value={passwordForm.values.verifyPassword} onBlur={passwordForm.handleBlur} onChange={passwordForm.handleChange} />
+                    <span className={errorClass}>{passwordForm.touched.verifyPassword ? passwordForm.errors.verifyPassword : ""}</span>
                 </div>
-                <button type="submit" className={buttonClass}>Save changes</button>
-            </section>
-
-            <section className="w-full lg:w-96 flex flex-col">
-                <label className={labelClass}>Password</label>
-                <label className={smallerLabelClass}>New Password</label>
-
-                <input type="password" className={inputClass} />
-
-                <label className={smallerLabelClass}>Verify Password</label>
-                <input type="password" className={inputClass} />
-                <button type="submit" className={buttonClass} >Save changes</button>
-            </section>
+                <button type="submit" className={buttonClass} disabled={passwordForm.isSubmitting}>Save changes {passwordForm.isSubmitting ?
+                    <LoadingSpinner className="ml-1 h-5 text-white" /> : null}</button>
+            </form>
         </>
     )
 }

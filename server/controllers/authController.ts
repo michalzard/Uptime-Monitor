@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { createId } from "@paralleldrive/cuid2";
 import * as argon2 from "argon2";
 import { db } from "..";
-import { checkExistingUser, deleteSessionByToken, findUserByUsername, registerUser, saveToSession } from "../sql/authQuery";
+import { checkExistingUser, deleteSessionByToken, findUserByUsername, registerUser, saveToSession, updateUserInfo, updateUserPassword } from "../sql/authQuery";
 import { setHTTPOnlyCookie } from "../utils/cookies";
 
 export async function userRegistration(req: Request, res: Response) {
@@ -103,10 +103,35 @@ export async function userSession(req: Request, res: Response) {
         res.status(500).send({ message: "Internal Server Error" });
     }
 }
-// TODO: update personal user info
-export async function userInfoUpdate(req: Request, res: Response) {
+
+// update
+export async function userUpdateInfo(req: Request, res: Response) {
+    const { username, email } = req.body;
     try {
-        // TODO:
+        if (!username || !email) return res.status(400).send({ message: "Both username and email is required" });
+        else {
+            const { pk } = res.locals.user;
+            const updated = await db.query(updateUserInfo, [pk, username, email]);
+            if (updated.rowCount > 0) res.status(200).send({ message: "User information updated" });
+            else res.status(304).send();
+        }
+    } catch (err) {
+        // handle error
+        console.log(err);
+        res.status(500).send({ message: "Internal Server Error" });
+    }
+}
+export async function userUpdatePassword(req: Request, res: Response) {
+    const { password } = req.body;
+    try {
+        if (!password) return res.status(400).send({ message: "Enter new password" });
+        else {
+            const { pk } = res.locals.user;
+            const hashedPw = await argon2.hash(password);
+            const updated = await db.query(updateUserPassword, [pk, hashedPw]);
+            if (updated.rowCount > 0) res.status(200).send({ message: "User password updated" });
+            else res.status(404).send({ message: "There was issue updating user password" });
+        }
     } catch (err) {
         // handle error
         console.log(err);

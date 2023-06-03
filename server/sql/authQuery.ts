@@ -8,9 +8,6 @@ INNER JOIN "user" ON "user".pk = "session".user_pk
 LEFT JOIN aws_img ON aws_img.user_pk = "user".pk AND aws_img.user_pk IS NOT NULL
 WHERE token = $1; 
 `;
-export const findSessionByPrimaryKey: string = `
-SELECT * FROM "session" WHERE user_pk = $1;
-`;
 export const deleteSessionByToken: string = `
 DELETE FROM "session" WHERE token = $1;
 `;
@@ -34,4 +31,11 @@ ON "user".pk = aws_img.user_pk;
 `;
 export const updateUserAvatarURLByPK: string = `
 UPDATE "user" SET avatar_url = $2 WHERE pk = $1 
+`;
+
+export const updateUserInfo: string = `
+UPDATE "user" SET username = $2,email = $3 WHERE pk = $1
+`;
+export const updateUserPassword: string = `
+UPDATE "user" SET password = $2 WHERE pk = $1
 `;
