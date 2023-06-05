@@ -19,5 +19,5 @@ export const updatePasswordSchema = yup.object({
 
 export const updateUserInfoSchema = yup.object({
     username: yup.string().min(5).max(100).required(),
-    email: yup.string().email("Email is invalid").required(),
+    email: yup.string().matches(emailRegex, "Email is invalid").required(),
 });
