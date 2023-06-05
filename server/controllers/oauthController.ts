@@ -3,9 +3,9 @@ import axios from "axios";
 import { db } from "..";
 import { findUserByID, registerUser, saveToSession } from "../sql/authQuery";
 import { setHTTPOnlyCookie } from "../utils/cookies";
-import { google } from "googleapis";
 import dotenv from "dotenv";
 import { createId } from "@paralleldrive/cuid2";
+import { authorizationURL, getGoogleTokens, getGoogleUserInfo, setGoogleCredentials } from "../vendor/google";
 dotenv.config();
 
 export async function userGithubAccess(req: Request, res: Response) {
@@ -13,7 +13,8 @@ export async function userGithubAccess(req: Request, res: Response) {
     try {
         if (!code) return res.status(404).send({ message: "Specify github code" });
         else {
-            const githubAccessTokenURL = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}&redirect_uri=${process.env.CLIENT_URL}/signin`;
+            const redirectURI = `${process.env.CLIENT_URL}/signin`;
+            const githubAccessTokenURL = `https://github.com/login/oauth/access_token?client_id=${process.env.GITHUB_CLIENT_ID}&client_secret=${process.env.GITHUB_CLIENT_SECRET}&code=${code}&redirect_uri=${redirectURI}&error_uri=${redirectURI}`;
             axios.post(githubAccessTokenURL, {}, {
                 headers: {
                     Accept: "application/json"
@@ -90,29 +91,14 @@ export async function userGithubAccess(req: Request, res: Response) {
     }
 }
 
-// Google oAuth
-const oauth2Client = new google.auth.OAuth2({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    redirectUri: `${process.env.CLIENT_URL}`,
-});
-const googleAccessScopes = [
-    "https://www.googleapis.com/auth/userinfo.profile",
-];
+
 export async function userGoogleRequestLink(req: Request, res: Response) {
     try {
-        const authorizationURL = oauth2Client.generateAuthUrl({
-            access_type: "offline",
-            scope: googleAccessScopes,
-            include_granted_scopes: true,
-            response_type: "code",
-        });
         if (authorizationURL) {
             res.status(200).send({ message: "Google authorization url", location: authorizationURL });
         } else {
-            res.status(404).send({ message: "There was some issue generating authorizationURL", location: null });
+            res.status(404).send({ message: "There was some issue generating authorization url", location: null });
         }
-
     } catch (err) {
         // handle error
         if (err instanceof Error)
@@ -125,14 +111,12 @@ export async function userGoogleAccess(req: Request, res: Response) {
     const { code } = req.body;
     try {
         if (!code) return res.status(404).send({ message: "Bad Request" });
-        const { tokens } = await oauth2Client.getToken(code);
+        const tokens = await getGoogleTokens(code);
         // get access and refresh tokens
-        oauth2Client.setCredentials(tokens);
-        const userInfoAPI = await google.oauth2({ version: "v2", auth: oauth2Client }).userinfo.get();
-        const { data } = userInfoAPI;
+        setGoogleCredentials(tokens);
+        const { data } = await getGoogleUserInfo();
         const { id, email, name, picture } = data;
         if (data) {
-
             if (id) {
                 const isAlreayRegged = await db.query(findUserByID, [id]);
                 const user = isAlreayRegged.rows[0];
