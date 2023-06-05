@@ -26,8 +26,9 @@ function UptimeStatus({ showTimeline = false, data = [] }: UptimeStatusProps) {
                 showTimeline ?
                     <>
                         <section className="w-full h-20">
-                            <svg className="w-full h-full">
+                            <svg className="w-full h-full ">
                                 {
+                                    // TODO: on mobile scale timeline to show whole svg correctly
                                     data.length > 0 ? data.map((r, i) => <rect key={i} x={12.8 * i} className={`w-2.5 h-full text-gray-400 hover:text-gray-300`} fill="currentColor" />)
                                         : defaultData.map((r, i) => <rect key={i} x={12.8 * i} className={`w-2.5 h-full ${r.status === "operational" ? "text-green-400" : "text-gray-400"}   hover:text-gray-300`} fill="currentColor" />)
                                 }
