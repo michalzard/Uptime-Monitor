@@ -3,7 +3,7 @@ import { db } from "..";
 import { findSessionByToken } from "../sql/authQuery";
 import { createNewPage, findUserPages } from "../sql/pageQuery";
 import { createId } from "@paralleldrive/cuid2";
-
+import { newPageSchema, yup } from "../validation/pageSchema";
 
 export async function createPage(req: Request, res: Response) {
     const { name, isPublic } = req.body;
@@ -12,7 +12,7 @@ export async function createPage(req: Request, res: Response) {
         *  page(user_pk,id,name,public)
         */
         if (!name && !isPublic) return res.status(400).send({ message: "name and isPublic has to be specified" });
-
+        await newPageSchema.validate({ name, type: isPublic });
         const sessions = await db.query(findSessionByToken, [res.locals.sessionID]);
         const session = sessions.rows[0];
         const { user_pk } = session;
@@ -30,8 +30,9 @@ export async function createPage(req: Request, res: Response) {
         }
     } catch (err) {
         // handle error
-        console.log(err);
-        res.status(500).send({ message: "Internal Server Error" });
+        if (err instanceof yup.ValidationError) {
+            res.status(400).send({ error: err.message });
+        } else res.status(500).send({ message: "Internal Server Error" });
     }
 }
 
@@ -88,11 +89,11 @@ export async function getAllPages(req: Request, res: Response) {
 //     }
 // }
 
-
+// TODO: finish
 export async function addComponent(req: Request, res: Response) {
     const { name, description, startDate } = req.body;
     try {
-        
+
     } catch (err) {
         // handle error
         console.log(err);
