@@ -47,7 +47,7 @@ const { Pool } = pg;
 export const db = new Pool({
     host: process.env.DB_HOST,
     database: process.env.DB_NAME || "postgres",
-    port: +process.env.DB_PORT! || 5432,//5432 is default postgres
+    port: process.env.DB_PORT as number | undefined || 5432,//5432 is default postgres
     user: process.env.DB_USER || "postgres",
     password: process.env.DB_PASSWORD || "",
 
