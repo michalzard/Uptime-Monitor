@@ -4,10 +4,14 @@ import * as argon2 from "argon2";
 import { db } from "..";
 import { checkExistingUser, deleteSessionByToken, findUserByUsername, registerUser, saveToSession, updateUserInfo, updateUserPassword } from "../sql/authQuery";
 import { setHTTPOnlyCookie } from "../utils/cookies";
+import * as yup from "yup";
+import { loginSchema, registerSchema, updatePasswordSchema, updateUserInfoSchema } from "../validation/authSchema";
+
 
 export async function userRegistration(req: Request, res: Response) {
     const { username, email, password } = req.body;
     try {
+        await registerSchema.validate({ username, email, password });
         const existingUser = await db.query(checkExistingUser, [username, email]);
         if (existingUser.rowCount > 0) {
             res.status(400).send({ message: "Username or email is already in use." });
@@ -29,12 +33,16 @@ export async function userRegistration(req: Request, res: Response) {
     } catch (err) {
         // handle error
         if (err instanceof Error) {
-            console.log(err);
-            if (err.message.includes("duplicate")) {
-                res.status(400).send({ message: "Username or email is already in use." });
+            if (err instanceof yup.ValidationError) {
+                return res.status(400).send({ error: err.message });
             } else {
-                res.status(500).send({ message: "Internal Server Error" });
+                if (err.message.includes("duplicate")) {
+                    res.status(400).send({ message: "Username or email is already in use." });
+                } else {
+                    res.status(500).send({ message: "Internal Server Error" });
+                }
             }
+
         }
     }
 }
@@ -43,6 +51,7 @@ export async function userLogin(req: Request, res: Response) {
     const { username, password } = req.body;
     try {
         if (!username || !password) return res.status(400).send({ message: "Username and password are required" });
+        await loginSchema.validate({ username, password });
         const users = await db.query(findUserByUsername, [username]);
         const foundUser = users.rows[0];//first result
         if (foundUser) {
@@ -67,8 +76,9 @@ export async function userLogin(req: Request, res: Response) {
         }
     } catch (err) {
         // handle error
-        console.log(err);
-        res.status(500).send({ message: "Internal Server Error" });
+        if (err instanceof yup.ValidationError) {
+            res.status(400).send({ error: err.message });
+        } else res.status(500).send({ message: "Internal Server Error" });
     }
 }
 export async function userLogout(req: Request, res: Response) {
@@ -104,12 +114,14 @@ export async function userSession(req: Request, res: Response) {
     }
 }
 
-// update
+
+// update info
 export async function userUpdateInfo(req: Request, res: Response) {
     const { username, email } = req.body;
     try {
         if (!username || !email) return res.status(400).send({ message: "Both username and email is required" });
         else {
+            await updateUserInfoSchema.validate({ username, email });
             const { pk } = res.locals.user;
             const updated = await db.query(updateUserInfo, [pk, username, email]);
             if (updated.rowCount > 0) res.status(200).send({ message: "User information updated" });
@@ -117,15 +129,20 @@ export async function userUpdateInfo(req: Request, res: Response) {
         }
     } catch (err) {
         // handle error
-        console.log(err);
-        res.status(500).send({ message: "Internal Server Error" });
+        if (err instanceof yup.ValidationError) {
+            res.status(400).send({ error: err.message });
+        } else res.status(500).send({ message: "Internal Server Error" });
     }
 }
+
+
+// update password
 export async function userUpdatePassword(req: Request, res: Response) {
     const { password } = req.body;
     try {
         if (!password) return res.status(400).send({ message: "Enter new password" });
         else {
+            await updatePasswordSchema.validate({ password });
             const { pk } = res.locals.user;
             const hashedPw = await argon2.hash(password);
             const updated = await db.query(updateUserPassword, [pk, hashedPw]);
@@ -134,7 +151,8 @@ export async function userUpdatePassword(req: Request, res: Response) {
         }
     } catch (err) {
         // handle error
-        console.log(err);
-        res.status(500).send({ message: "Internal Server Error" });
+        if (err instanceof yup.ValidationError) {
+            res.status(400).send({ error: err.message });
+        } else res.status(500).send({ message: "Internal Server Error" });
     }
 }
