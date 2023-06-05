@@ -21,13 +21,18 @@ RETURNING pk,username,email,avatar_url;
 `;
 // user
 export const findUserByUsername: string = `
-SELECT * FROM "user" WHERE username = $1;
+SELECT "user".*,aws_img.name AS aws_img_name FROM "user" 
+LEFT JOIN aws_img ON aws_img.user_pk = "user".pk
+WHERE username = $1
+;
 `;
-// might delete this 
 export const findUserByPrimaryKey: string = `
 SELECT *,name AS aws_img_name FROM "user" 
 INNER JOIN aws_img 
 ON "user".pk = aws_img.user_pk;
+`;
+export const findUserByID: string = `
+SELECT * FROM "user" WHERE id = $1;
 `;
 export const updateUserAvatarURLByPK: string = `
 UPDATE "user" SET avatar_url = $2 WHERE pk = $1 
