@@ -5,8 +5,8 @@ import { SidebarButton } from "../Sidebar";
 import { useState } from "react";
 import { usePageStore } from "../../../store/pageStore";
 import { useFormik } from "formik";
-import * as yup from "yup";
 import { useNavigate } from "react-router-dom";
+import { newPageSchema } from "../../../../../server/validation/pageSchema";
 
 type NewPageModalProps = {
     isOpen: boolean;
@@ -18,16 +18,13 @@ function NewPageModal({ isOpen, close, open, hidden = false }: NewPageModalProps
     const page = usePageStore();
     const navigate = useNavigate();
     const [pageType, setPageType] = useState("public");
-    const pageValidation = yup.object({
-        name: yup.string().min(3).max(20).required("Page name is required"),
-        type: yup.string().oneOf(["public", "private"])
-    });
+
     const { values, errors, touched, handleBlur, handleChange, setFieldValue, handleSubmit, isSubmitting } = useFormik({
         initialValues: {
             name: "",
             type: "public",
         },
-        validationSchema: pageValidation,
+        validationSchema: newPageSchema,
         onSubmit: (values, form) => {
             if (values) { page.create({ name: values.name, isPublic: values.type === "public" }, navigate); close(); }
             form.resetForm();

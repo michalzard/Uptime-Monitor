@@ -4,8 +4,8 @@ import * as argon2 from "argon2";
 import { db } from "..";
 import { checkExistingUser, deleteSessionByToken, findUserByUsername, registerUser, saveToSession, updateUserInfo, updateUserPassword } from "../sql/authQuery";
 import { setHTTPOnlyCookie } from "../utils/cookies";
-import * as yup from "yup";
-import { loginSchema, registerSchema, updatePasswordSchema, updateUserInfoSchema } from "../validation/authSchema";
+import { yup, loginSchema, registerSchema, updatePasswordSchema, updateUserInfoSchema } from "../validation/authSchema";
+import { GetObjectCommand, s3GetSignedUrl } from "../vendor/aws";
 
 
 export async function userRegistration(req: Request, res: Response) {
@@ -46,7 +46,7 @@ export async function userRegistration(req: Request, res: Response) {
         }
     }
 }
-
+// FIXME: get freshly generated avatar_url 
 export async function userLogin(req: Request, res: Response) {
     const { username, password } = req.body;
     try {
@@ -59,8 +59,16 @@ export async function userLogin(req: Request, res: Response) {
             if (isNormalUser) {
                 const isValidPassword = await argon2.verify(foundUser.password, password);
                 if (isValidPassword) {
-                    const { pk, password, ...user } = foundUser; //loaded from db
+                    const { pk, password, aws_img_name, ...user } = foundUser; //loaded from db
                     const generatedId = createId();
+                    // fresh avatar_url
+                    const getImageCommand = new GetObjectCommand({
+                        Bucket: process.env.AWS_BUCKET_NAME,
+                        Key: aws_img_name,
+                    })
+                    const url = await s3GetSignedUrl(getImageCommand);
+                    user.avatar_url = url;
+                    //
                     db.query(saveToSession, [generatedId, pk, "normal"]);
                     setHTTPOnlyCookie(res, "sessionID", generatedId);
                     res.status(200).send({ message: "User logged in", user: { ...user, service: "normal" } });
@@ -76,6 +84,7 @@ export async function userLogin(req: Request, res: Response) {
         }
     } catch (err) {
         // handle error
+        console.log(err);
         if (err instanceof yup.ValidationError) {
             res.status(400).send({ error: err.message });
         } else res.status(500).send({ message: "Internal Server Error" });

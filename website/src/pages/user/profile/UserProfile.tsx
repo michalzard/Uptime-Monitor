@@ -42,7 +42,7 @@ function UserProfile() {
 
     const imgUpload = () => {
         setFileUploading(true);
-        axios.post(`${import.meta.env.VITE_API_URL}/upload`, fileData, { withCredentials: true }).then(res => {
+        axios.post(`${import.meta.env.VITE_API_URL}/upload/profile-picture`, fileData, { withCredentials: true }).then(res => {
             const { url } = res.data;
             if (url) { setPreview(""); updateAvatar(url); }
             setFileUploading(false);

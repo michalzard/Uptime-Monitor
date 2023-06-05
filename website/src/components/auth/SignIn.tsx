@@ -1,23 +1,20 @@
-import * as yup from "yup";
 import { useFormik } from "formik";
 import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
 import { GithubIcon, GoogleIcon, LoadingSpinner } from '../../Icons';
+import { loginSchema } from "../../../../server/validation/authSchema";
 
 function SignIn() {
     const navigate = useNavigate();
     const auth = useAuthStore();
-    const loginValidation = yup.object({
-        username: yup.string().required().min(5).max(30).trim(),
-        password: yup.string().required().min(5).trim(),
-    });
+
 
     const { values, errors, touched, handleBlur, handleChange, handleSubmit, isSubmitting } = useFormik({
         initialValues: {
             username: "",
             password: "",
         },
-        validationSchema: loginValidation,
+        validationSchema: loginSchema,
         onSubmit: (values, form) => {
             auth.login(values, navigate);
             form.resetForm();

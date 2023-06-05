@@ -6,6 +6,6 @@ const router = express.Router();
 import multer from "multer";
 const upload = multer();
 
-router.post("/", verifySessionCookie, getUserFromSession, upload.single("pfp"), handlePfpUpload);
+router.post("/profile-picture", verifySessionCookie, getUserFromSession, upload.single("pfp"), handlePfpUpload);
 
 export default router;
