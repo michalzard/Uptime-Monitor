@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { db } from "..";
-import { findSessionByToken, findUserByPrimaryKey } from "../sql/authQuery";
-import { client } from "../controllers/uploadController";
-import { GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { findSessionByToken } from "../sql/authQuery";
+import { GetObjectCommand, s3GetSignedUrl } from "../vendor/aws";
 
 export async function getUserFromSession(req: Request, res: Response, next: NextFunction) {
     const sessions = await db.query(findSessionByToken, [res.locals.sessionID]);
@@ -16,7 +14,7 @@ export async function getUserFromSession(req: Request, res: Response, next: Next
                 Key: session.aws_img_name,
             });
             // this has to load new url everytime so that access to the image is "fresh"
-            const url = await getSignedUrl(client, getImage, { expiresIn: 7200 })
+            const url = await s3GetSignedUrl(getImage);
             session.avatar_url = url;
         }
 

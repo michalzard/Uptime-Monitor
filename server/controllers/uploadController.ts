@@ -1,26 +1,18 @@
 import { Request, Response } from "express";
-import { S3Client, PutObjectCommand, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { createId } from "@paralleldrive/cuid2";
 import sharp from "sharp";
 import { db } from "..";
 import { updateUserAvatarURLByPK } from "../sql/authQuery";
 import { createAwsImageRef, updateExistingAwsImageRef } from "../sql/awsQuery";
+import { GetObjectCommand, PutObjectCommand, s3GetSignedUrl, s3UploadFile } from "../vendor/aws";
 
-export const client = new S3Client({
-    region: process.env.AWS_BUCKET_REGION,
-    credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY as string,
-        secretAccessKey: process.env.AWS_SECRET_KEY as string,
-    }
-});
+
 
 export async function handlePfpUpload(req: Request, res: Response) {
     try {
         const file = req.file;
         if (file) {
             await sharp(file.buffer).resize({ width: 80, height: 80 }).webp({ effort: 6, quality: 20 }).toBuffer().then(data => {
-                console.log(`Resized ${file.originalname}`);
                 const fileName = `${createId()}.webp`;
                 const uploadImageCmd = new PutObjectCommand({
                     Bucket: process.env.AWS_BUCKET_NAME,
@@ -31,8 +23,9 @@ export async function handlePfpUpload(req: Request, res: Response) {
                     Bucket: process.env.AWS_BUCKET_NAME,
                     Key: fileName,
                 });
-                client.send(uploadImageCmd).then(async data => {
-                    const url = await getSignedUrl(client, getUploadedImageCmd, { expiresIn: 7200 });
+                s3UploadFile(uploadImageCmd).then(async data => {
+                    const url = await s3GetSignedUrl(getUploadedImageCmd);
+
                     if (url) {
                         db.query(updateUserAvatarURLByPK, [res.locals.user.pk, url]); //save url to db
                         // save reference for said image for future
